@@ -1,0 +1,35 @@
+/* Custom navigation dropdown positioning */
+.navigation-menu-content {
+  position: absolute;
+  top: 100%;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Override the default positioning behavior of the shadcn Navigation Menu */
+[data-radix-navigation-menu-content] {
+  position: absolute !important;
+  left: 0 !important;
+  top: 100% !important;
+  width: auto !important;
+  transform: none !important;
+}
+
+/* Ensure each dropdown is positioned relative to its trigger */
+.services-trigger + [data-radix-navigation-menu-content],
+.about-trigger + [data-radix-navigation-menu-content],
+.dev-trigger + [data-radix-navigation-menu-content] {
+  left: 0 !important;
+  transform-origin: top left !important;
+}
+
