@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -25,10 +25,14 @@ import {
   ShoppingBag,
   CheckSquare,
   Home,
+  Menu,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function Navigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
     <nav className="bg-white shadow-sm relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -152,8 +156,110 @@ export default function Navigation() {
               <Link href="/login">Log in</Link>
             </Button>
           </div>
+
+          {/* Mobile menu button */}
+          <div className="flex md:hidden">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#00ae89]"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <span className="sr-only">Open main menu</span>
+              {isMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile menu, show/hide based on menu state */}
+      {isMenuOpen && (
+        <div className="md:hidden" id="mobile-menu">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {/* Our Services Section */}
+            <div className="border-b border-gray-200 py-2">
+              <div className="font-medium px-3 py-2">Our Services</div>
+              <Link
+                href="/get-started"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Get Started Guide
+              </Link>
+              <Link
+                href="/our-customers"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Our Customers
+              </Link>
+              <Link
+                href="/pricing"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/privacy-policy"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Privacy Policy
+              </Link>
+            </div>
+
+            <Link
+              href="/marketplace"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
+              Marketplace
+            </Link>
+
+            {/* About Us Section */}
+            <div className="border-b border-gray-200 py-2">
+              <div className="font-medium px-3 py-2">About Us</div>
+              <Link
+                href="/our-purpose"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Our Purpose
+              </Link>
+              <Link
+                href="/contact"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+              >
+                Contact Us
+              </Link>
+            </div>
+
+            <Link
+              href="/newsletter"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            >
+              Newsletter
+            </Link>
+
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              <div className="flex items-center px-5">
+                <Link
+                  href="/sign-up"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Sign up
+                </Link>
+                <Link
+                  href="/login"
+                  className="ml-4 block px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a]"
+                >
+                  Log in
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
@@ -182,4 +288,3 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWit
   },
 )
 ListItem.displayName = "ListItem"
-

@@ -56,6 +56,7 @@ const mockListing: Listing = {
 }
 export async function generateStaticParams() {
   return [{ id: '1' }]; 
+}
 
 export default function EditListingPage() {
   const params = useParams()
