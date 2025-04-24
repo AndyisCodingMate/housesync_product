@@ -13,6 +13,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileUp } from "lucide-react"
 
+//Modifiable, change as needed
+const AMENITIES = [
+  "Washer",
+  "Dryer",
+  "AC",
+  "Parking",
+  "Pet Friendly",
+  "Gym",
+  "Pool",
+  "Furnished",
+  "Wheelchair Accessible",
+  "Smoke Friendly",
+  "Walk-in Closet", 
+  "Patio/Balcony",
+  "Elevator",
+  "Playground",
+  "Rooftop Deck",
+  "Utilities Included",
+  "Package Receiving"
+]
+
 type Listing = {
   title: string
   description: string
@@ -28,6 +49,7 @@ type Listing = {
   bathrooms: number
   images: string[]
   thumbnail: string
+  amenities: string[]
   supportingDocuments: File[]
 }
 
@@ -46,7 +68,8 @@ const initialListing: Listing = {
   bathrooms: 1,
   images: [],
   thumbnail: "",
-  supportingDocuments: [],
+  amenities: [],
+  supportingDocuments: []
 }
 
 export default function AddListingPage() {
@@ -79,11 +102,20 @@ export default function AddListingPage() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real application, you would save the new listing here
-    console.log("Saving new listing:", listing)
-    router.push("/dev/landlord-dashboard")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const response = await fetch("/api/listings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(listing),
+    });
+
+    if (response.ok) {
+      router.push("/dev/landlord-dashboard");
+    } else {
+      alert("Failed to save listing");
+    }
   }
 
   return (
@@ -200,6 +232,31 @@ export default function AddListingPage() {
                 onChange={handleInputChange}
                 required
               />
+            </div>
+
+            <div>
+              <Label>Amenities</Label>
+                <div className="flex flex-wrap gap-4">
+                  {AMENITIES.map((amenity) => (
+                    <label key={amenity} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      value={amenity}
+                      checked={listing.amenities.includes(amenity)}
+                      onChange={(e) => {
+                        setListing((prev) => {
+                          if (e.target.checked) {
+                            return { ...prev, amenities: [...prev.amenities, amenity] }
+                          } else {
+                            return { ...prev, amenities: prev.amenities.filter((a) => a !== amenity) }
+                          }
+                        })
+                      }}
+                    />
+                    {amenity}
+                    </label>
+                    ))}
+                </div>
             </div>
           </CardContent>
         </Card>
