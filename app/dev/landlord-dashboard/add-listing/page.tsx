@@ -38,7 +38,7 @@ type Listing = {
   title: string
   description: string
   price: number
-  status: "available" | "unavailable"
+  status: "Available"
   verification: "Verified" | "Pending" | "Rejected"
   streetAddress1: string
   streetAddress2: string
@@ -57,7 +57,7 @@ const initialListing: Listing = {
   title: "",
   description: "",
   price: 0,
-  status: "available",
+  status: "Available",
   verification: "Pending",
   streetAddress1: "",
   streetAddress2: "",
@@ -160,7 +160,6 @@ export default function AddListingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="unavailable">Unavailable</SelectItem>
                 </SelectContent>
               </Select>
             </div>

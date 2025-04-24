@@ -18,7 +18,7 @@ type Listing = {
   title: string
   description: string
   price: number
-  status: "available" | "unavailable"
+  status: "available" | "under_maintenance" | "rented"
   verification: "Verified" | "Pending" | "Rejected"
   streetAddress1: string
   streetAddress2: string
@@ -54,9 +54,13 @@ const mockListing: Listing = {
     "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
   supportingDocuments: [],
 }
+
+//Commented out for now, was causing issues b/c cant use with 'use client' - Pio
+/*
 export async function generateStaticParams() {
   return [{ id: '1' }]; 
 }
+*/
 
 export default function EditListingPage() {
   const params = useParams()
@@ -64,10 +68,16 @@ export default function EditListingPage() {
   const [listing, setListing] = useState<Listing>(mockListing)
 
   useEffect(() => {
-    // In a real application, you would fetch the listing data here
-    // For now, we'll use the mock data
-    setListing(mockListing)
-  }, [])
+    //setListing(mockListing)
+    const fetchListing = async () => {
+      const response = await fetch(`/api/listings/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setListing(data);
+      }
+    };
+    fetchListing();
+  }, [params.id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setListing({ ...listing, [e.target.name]: e.target.value })
@@ -144,7 +154,8 @@ export default function EditListingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="unavailable">Unavailable</SelectItem>
+                  <SelectItem value="rented">Rented</SelectItem>
+                  <SelectItem value="under_maintenance">Under Maintenance</SelectItem>
                 </SelectContent>
               </Select>
             </div>

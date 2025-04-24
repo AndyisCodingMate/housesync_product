@@ -73,6 +73,17 @@ export function MyListings() {
     router.push("/dev/landlord-dashboard/add-listing")
   }
 
+  const [listing, setListing] = useState<Listing[]>(initialListings);
+
+  const handleRemove = async (id: number) => {
+    if (window.confirm("Are you sure you want to remove this listing?")) {
+      // Call your API to delete the listing
+      //await fetch(`/api/listings/${id}`, { method: "DELETE" });
+      // Remove from UI state (so the change is reflected immediately)
+      setListing((prev) => prev.filter((l) => l.id !== id));
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -148,6 +159,15 @@ export function MyListings() {
               <Button onClick={() => handleEdit(listing.id)} className="w-full rounded-3xl px-6">
                 Edit
               </Button>
+
+              <Button
+                variant="destructive"
+                onClick={() => handleRemove(listing.id)}
+                className="w-full rounded-3xl px-6 mt-2"
+              >
+              Remove
+              </Button>
+
             </div>
           </div>
         ))}
