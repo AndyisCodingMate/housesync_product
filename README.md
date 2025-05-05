@@ -9,26 +9,29 @@ A quick-start guide for running this Next.js project locally.
 You can clone the repository using either HTTPS or SSH:
 
 - **HTTPS:**
-git clone https://github.com/your-username/your-repo-name.git
+
+<pre> ``` git clone https://github.com/AndyisCodingMate/housesync_product.git ``` </pre>
 
 
 - **SSH:**
-git clone git@github.com:your-username/your-repo-name.git
+
+<pre> ```git clone git@github.com:your-username/your-repo-name.git``` </pre>
 
 ---
 
 ## 📦 Installing Dependencies
 
 Navigate into the project directory and install the dependencies:
-cd your-repo-name
-npm install
+
+<pre> ```cd your-repo-name npm install ``` </pre>
 
 ---
 
 ## 🏃 Running the Development Server
 
 Start the local development server with:
-npm run dev
+
+<pre>```npm run dev```</pre>
 
 ---
 
@@ -36,9 +39,8 @@ npm run dev
 
 If you encounter problems related to React version or peer dependencies, run:
 
-npm install --legacy-peer-deps
+<pre>```npm install --legacy-peer-deps```</pre>
 
-text
 
 Then try running the development server again.
 
@@ -48,9 +50,9 @@ Then try running the development server again.
 
 Once the server is running, open your browser and go to:
 
-http://localhost:3000
+<pre>```http://localhost:3000```</pre>
 
-text
+
 
 You should see your Next.js application running in the local environment.
 
