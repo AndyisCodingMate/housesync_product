@@ -23,8 +23,7 @@ You can clone the repository using either HTTPS or SSH:
 
 Navigate into the project directory and install the dependencies:
 
-<pre> 
-cd your-repo-name 
+<pre> cd your-repo-name 
 npm install
 </pre>
 
@@ -34,7 +33,7 @@ npm install
 
 Start the local development server with:
 
-<pre>```npm run dev```</pre>
+<pre> npm run dev</pre>
 
 ---
 
@@ -42,7 +41,7 @@ Start the local development server with:
 
 If you encounter problems related to React version or peer dependencies, run:
 
-<pre>```npm install --legacy-peer-deps```</pre>
+<pre>npm install --legacy-peer-deps</pre>
 
 
 Then try running the development server again.
@@ -53,7 +52,7 @@ Then try running the development server again.
 
 Once the server is running, open your browser and go to:
 
-<pre>```http://localhost:3000```</pre>
+<pre>http://localhost:3000</pre>
 
 
 
