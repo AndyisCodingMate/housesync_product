@@ -10,12 +10,12 @@ You can clone the repository using either HTTPS or SSH:
 
 - **HTTPS:**
 
-<pre> ``` git clone https://github.com/AndyisCodingMate/housesync_product.git ``` </pre>
+<pre> git clone https://github.com/AndyisCodingMate/housesync_product.git </pre>
 
 
 - **SSH:**
 
-<pre> ```git clone git@github.com:your-username/your-repo-name.git``` </pre>
+<pre> git clone git@github.com:AndyisCodingMate/housesync_product.git </pre>
 
 ---
 
@@ -23,7 +23,10 @@ You can clone the repository using either HTTPS or SSH:
 
 Navigate into the project directory and install the dependencies:
 
-<pre> ```cd your-repo-name npm install ``` </pre>
+<pre> 
+cd your-repo-name 
+npm install
+</pre>
 
 ---
 
