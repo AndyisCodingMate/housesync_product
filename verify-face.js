@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
@@ -41,3 +42,46 @@ async function handler(req, res) {
 }
 
 module.exports = handler;
+=======
+const fs = require("fs");
+const axios = require("axios");
+const FormData = require("form-data");
+
+async function verifyFaceHandler(document, selfie) {
+    try {
+        // Read the uploaded files
+        const documentBuffer = fs.readFileSync(document.path);
+        const selfieBuffer = fs.readFileSync(selfie.path);
+
+        // Create FormData to send images to Face++ API
+        const form = new FormData();
+        form.append("api_key", process.env.FACE_PLUS_PLUS_API_KEY);
+        form.append("api_secret", process.env.FACE_PLUS_PLUS_API_SECRET);
+        form.append("image_file1", documentBuffer, { filename: document.originalname });
+        form.append("image_file2", selfieBuffer, { filename: selfie.originalname });
+
+        // Send request to Face++ API
+        const response = await axios.post("https://api-us.faceplusplus.com/facepp/v3/compare", form, {
+            headers: {
+                ...form.getHeaders(),
+            },
+        });
+
+        const confidence = response.data.confidence;
+
+        // Check confidence level to determine if the images match
+        if (confidence > 80) {
+            console.log("The images are the same person! Confidence:", confidence);
+            return true; // Images match
+        } else {
+            console.log("The images are not the same person. Confidence:", confidence);
+            return false; // Images do not match
+        }
+    } catch (error) {
+        console.error("Error verifying faces:", error.message);
+        throw new Error("Face verification failed");
+    }
+}
+
+module.exports = verifyFaceHandler;
+>>>>>>> Stashed changes
