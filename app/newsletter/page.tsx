@@ -21,7 +21,7 @@ export default function NewsletterPage() {
     // Replace this URL with your Google Script Web App URL
     const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
 
-    const response = await fetch("/api/subscribe", {
+    const response = await fetch(scriptUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

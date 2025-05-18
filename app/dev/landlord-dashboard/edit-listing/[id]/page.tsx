@@ -1,4 +1,5 @@
 "use client"
+
 import type React from "react"
 
 import { useState, useEffect } from "react"
@@ -52,6 +53,9 @@ const mockListing: Listing = {
   thumbnail:
     "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
   supportingDocuments: [],
+}
+export async function generateStaticParams() {
+  return [{ id: '1' }]; 
 }
 
 export default function EditListingPage() {
