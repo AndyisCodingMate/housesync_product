@@ -12,6 +12,7 @@ import { CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 import { MyListings } from "./components/my-listings"
 import { MapPin } from "lucide-react"
+import { Toast } from "@radix-ui/react-toast"
 
 // Mock data
 const mockContracts = [
@@ -203,16 +204,76 @@ export default function LandlordDashboardPage() {
     }
   }
 
-  const handleDocumentUpload = () => {
-    if (activeChat === 1) {
-      setChatMessages((prev) => ({
-        ...prev,
-        1: prev[1].map((msg) =>
-          msg.type === "request" && msg.status === "pending" ? { ...msg, status: "completed" } : msg,
-        ),
-      }))
-    }
-  }
+  const handleDocumentUpload = async () => {
+    if (activeChat !== 1) return;
+  
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,application/pdf';
+  
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+  
+      reader.onload = async () => {
+        try {
+          const base64String = reader.result.split(',')[1];
+          const reqId = Date.now().toString();
+  
+          const response = await fetch('/api/verify-doc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              doc_type: 'image',
+              doc_base64: base64String,
+              req_id: reqId,
+            }),
+          });
+  
+          if (!response.ok) {
+            console.error('HTTP Error:', response.status);
+            alert('Document verification failed. Please try again.');
+            return;
+          }
+  
+          const data = await response.json();
+  
+          // If the API returns a specific result flag, check it here
+          const isVerified = data?.result === 'Verified'; // Change this based on API docs
+  
+          if (isVerified) {
+            setChatMessages((prev) => ({
+              ...prev,
+              1: prev[1].map((msg) =>
+                msg.type === 'request' && msg.status === 'pending'
+                  ? { ...msg, status: 'completed', apiResult: data }
+                  : msg,
+              ),
+            }));
+  
+            alert('✅ Document successfully verified.');
+          } else {
+            alert('❌ Document verification failed.');
+          }
+        } catch (error) {
+          console.error('Upload or verification error:', error);
+          alert('An error occurred during verification.');
+        }
+      };
+  
+      reader.onerror = () => {
+        console.error('File reading failed');
+        alert('Could not read the file.');
+      };
+    };
+  
+    input.click();
+  };
+  
+  
 
   const handleContractSign = () => {
     if (activeChat === 1) {
