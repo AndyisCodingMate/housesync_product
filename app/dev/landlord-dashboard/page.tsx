@@ -240,11 +240,11 @@ export default function LandlordDashboardPage() {
           }
   
           const data = await response.json();
+          console.log(data); 
+          alert(`Raw response: ${JSON.stringify(data)}`);
   
-          // If the API returns a specific result flag, check it here
-          const isVerified = data?.result === 'Verified'; // Change this based on API docs
-  
-          if (isVerified) {
+          if (data.success && !data.isTampered) {
+
             setChatMessages((prev) => ({
               ...prev,
               1: prev[1].map((msg) =>
@@ -254,9 +254,19 @@ export default function LandlordDashboardPage() {
               ),
             }));
   
-            alert('✅ Document successfully verified.');
+            alert(' Document successfully verified.');
           } else {
-            alert('❌ Document verification failed.');
+            const reason = data.error_message ;
+            const severity = data.severity;
+            const type = data.doc_type;
+
+            if(data.isTampered){
+              alert('Document verification failed: Detected tampering.')
+            } else {
+              alert(`Document verification failed: ${reason}`)
+              alert(`Severity: ${severity}`)
+              alert(`Document Type: ${type}`)
+            }
           }
         } catch (error) {
           console.error('Upload or verification error:', error);
