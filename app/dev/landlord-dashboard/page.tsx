@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,7 @@ import { CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 import { MyListings } from "./components/my-listings"
 import { MapPin } from "lucide-react"
-import { Toast } from "@radix-ui/react-toast"
+
 
 // Mock data
 const mockContracts = [
@@ -83,9 +83,23 @@ const mockChats = [
   },
 ]
 
+
 export default function LandlordDashboardPage() {
   const [activeChat, setActiveChat] = useState<number | null>(null)
   const [message, setMessage] = useState("")
+  //For the loader
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  //For the document verification notification
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  useEffect(() => {
+    if (notification) {
+      const timeout = setTimeout(() => {
+        setNotification(null);
+      }, 2000); // Auto-dismiss after 2 seconds
+      return () => clearTimeout(timeout);
+    }
+  }, [notification]);
 
   const memoizedChatMessages = useMemo(() => {
     return {
@@ -206,7 +220,7 @@ export default function LandlordDashboardPage() {
 
   const handleDocumentUpload = async () => {
     if (activeChat !== 1) return;
-  
+ 
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*,application/pdf';
@@ -219,6 +233,7 @@ export default function LandlordDashboardPage() {
       reader.readAsDataURL(file);
   
       reader.onload = async () => {
+        setIsVerifying(true);
         try {
           const base64String = reader.result.split(',')[1];
           const reqId = Date.now().toString();
@@ -235,7 +250,7 @@ export default function LandlordDashboardPage() {
   
           if (!response.ok) {
             console.error('HTTP Error:', response.status);
-            alert('Document verification failed. Please try again.');
+            setNotification({ message: 'Could not verify document. Try again. ', type: 'error' });
             return;
           }
   
@@ -254,29 +269,31 @@ export default function LandlordDashboardPage() {
               ),
             }));
   
-            alert(' Document successfully verified.');
+            setNotification({ message: 'Document successfully verified.', type: 'success' });
           } else {
             const reason = data.error_message ;
             const severity = data.severity;
             const type = data.doc_type;
 
             if(data.isTampered){
-              alert('Document verification failed: Detected tampering.')
+              setNotification({ message: 'Verification failed: Document is tampered.', type: 'error' });
             } else {
-              alert(`Document verification failed: ${reason}`)
+              setNotification({ message: 'Verification failed: Document is tampered.', type: 'error' });
               alert(`Severity: ${severity}`)
               alert(`Document Type: ${type}`)
             }
           }
         } catch (error) {
           console.error('Upload or verification error:', error);
-          alert('An error occurred during verification.');
+          setNotification({ message: 'Error occured during verification. Try again. ', type: 'error' });
+        } finally {
+          setIsVerifying(false);
         }
       };
   
       reader.onerror = () => {
         console.error('File reading failed');
-        alert('Could not read the file.');
+        setNotification({ message: 'Could not read the file. Try again. ', type: 'error' });
       };
     };
   
@@ -300,6 +317,27 @@ export default function LandlordDashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Document Verification Loader */}
+      {isVerifying && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-[#00ae89] text-white p-6 rounded-2xl shadow-lg flex flex-col items-center space-y-4 w-72">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-white border-t-transparent" />
+            <p className="text-lg font-semibold text-center">Verifying document...</p>
+          </div>
+        </div>
+      )}
+  
+      {/* Verification Notification Pop-up */}
+      {notification && notification.type === "error" && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+            <div className="bg-neutral-200 text-red-600 p-6 rounded-2xl shadow-lg flex flex-col items-center space-y-4 w-80">
+              <div className="text-3xl">❌</div>
+              <p className="text-lg font-semibold text-center">{notification.message}</p>
+            </div>
+          </div>
+        )}
+
+        
       <h1 className="text-3xl font-bold mb-8 text-center text-black">Landlord Dashboard</h1>
       <Tabs defaultValue="contracts">
         <div className="flex justify-center mb-4">
@@ -429,6 +467,7 @@ export default function LandlordDashboardPage() {
             </Button>
           </div>
         </TabsContent>
+
         <TabsContent value="chats">
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="md:col-span-1 rounded-3xl">
@@ -470,6 +509,7 @@ export default function LandlordDashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                      
                 {activeChat && (
                   <>
                     <div className="h-64 overflow-y-auto mb-4 space-y-2">
