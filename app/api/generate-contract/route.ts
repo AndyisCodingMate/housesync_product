@@ -1,6 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs/promises";
 import path from "path";
+import OpenAI from "openai";
+
+type ChatMessage = {
+  role: "system" | "user" | "assistant";
+  content: string;
+};
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
@@ -9,33 +19,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const contractPath = path.join(process.cwd(), "data", "contract.txt");
     const contractTemplate = await fs.readFile(contractPath, "utf-8");
 
-    const apiRes = await fetch("https://api.deepseek.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-        "Content-Type": "application/json",
+    const messages: ChatMessage[] = [
+      {
+        role: "system",
+        content:
+          "You are a legal assistant that fills out contract templates. Replace placeholders like 'default_username', 'default_date', and 'default_address' with realistic values.",
       },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-          {
-            role: "system",
-            content: "You are a legal assistant that fills out contract templates. Replace all placeholders like 'default_username', 'default_date', and 'default_address' with realistic values.",
-          },
-          {
-            role: "user",
-            content: `Here is a contract template:\n\n${contractTemplate}\n\nPlease fill in the placeholders.`,
-          },
-        ],
-      }),
+      {
+        role: "user",
+        content: `Here is a contract template:\n\n${contractTemplate}\n\nPlease fill in the placeholders.`,
+      },
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages,
+      temperature: 0,
     });
 
-    const result = await apiRes.json();
-    const edited = result.choices?.[0]?.message?.content;
+    const editedContract = completion.choices?.[0]?.message?.content;
 
-    res.status(200).json({ editedContract: edited });
+    if (!editedContract) {
+      return res.status(500).json({ error: "No response from OpenAI" });
+    }
+
+    res.status(200).json({ editedContract });
   } catch (error) {
-    console.error("DeepSeek error:", error);
+    console.error("OpenAI error:", error);
     res.status(500).json({ error: "Failed to generate contract" });
   }
 }
