@@ -122,10 +122,12 @@ export default function LandlordDashboardPage() {
       2: [
         {
           sender: "Jane",
-          content: "Hi! I've sent you the lease agreement for review.",
+          content: "Let's do this!",
           timestamp: "2023-05-09T09:15:00",
         },
-        { sender: "You", content: "Thank you, I'll take a look at it.", timestamp: "2023-05-09T09:20:00" },
+        { sender: "You", content: "Sure thing! Let me prepare an agreement. ", timestamp: "2023-05-09T09:20:00", type: "request", status: "pending"},
+
+       
       ],
     }
   }, [])
@@ -219,7 +221,6 @@ export default function LandlordDashboardPage() {
   }
 
   const handleDocumentUpload = async () => {
-    if (activeChat !== 1) return;
  
     const input = document.createElement('input');
     input.type = 'file';
@@ -300,7 +301,54 @@ export default function LandlordDashboardPage() {
     input.click();
   };
   
+  const handleGenerateContract = async() => {
+    try {
+      
+      setNotification(null);
   
+      const res = await fetch("/api/generate-contract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: "abc123", // Replace with actual logged-in user ID or prop
+        }),
+      });
+  
+      if (!res.ok) {
+        throw new Error("Failed to generate contract");
+      }
+  
+      const data = await res.json();
+  
+      setChatMessages((prev) => ({
+        ...prev,
+        1: [
+          ...prev[1],
+          {
+            sender: "System",
+            content: data.contract,
+            timestamp: new Date().toISOString(),
+            type: "verification",
+          },
+        ],
+      }));
+  
+      setNotification({
+        message: "Contract generated successfully.",
+        type: "success",
+      });
+    } catch (err) {
+      console.error(err);
+      setNotification({
+        message: "Failed to generate contract.",
+        type: "error",
+      });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const handleContractSign = () => {
     if (activeChat === 1) {
@@ -547,17 +595,25 @@ export default function LandlordDashboardPage() {
                         </div>
                       ))}
                     </div>
+                    <div ref = {dummyRef}></div>
                     <div className="flex space-x-2">
                       <Input
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Type your message..."
-                        className="rounded-3xl"
+                        className="rounded-3xl flex-1"
                       />
-                      <Button onClick={handleSendMessage} className="rounded-3xl px-6">
+                      <Button onClick={handleSendMessage} className="rounded-3xl px-6 bg-blue-500 hover:bg-blue-400">
                         Send
                       </Button>
+                      <Button onClick={handleDocumentUpload} className="rounded-3xl px-6 text-white ">
+                        Upload
+                      </Button>
+                      <Button onClick={handleGenerateContract} className="rounded-3xl px-6 bg-emerald-600 text-white hover:bg-emerald-500">
+                        Generate
+                      </Button>
                     </div>
+
                   </>
                 )}
               </CardContent>
