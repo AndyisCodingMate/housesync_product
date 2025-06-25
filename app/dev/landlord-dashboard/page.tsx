@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 import { MyListings } from "./components/my-listings"
-import { MapPin, Send, FileUp } from "lucide-react"
+import { MapPin, Send, FileUp, Download } from "lucide-react"
 
 
 // Mock data
@@ -101,7 +101,19 @@ export default function LandlordDashboardPage() {
     }
   }, [notification]);
 
-  const memoizedChatMessages = useMemo(() => {
+  //Declaring an explicit type for now helps get rid of the errors
+  type ChatMessage = {
+    sender: string;
+    content: string;
+    timestamp: string;
+    type?: string;   
+    action?: string;   
+    status?: string;    
+    fileUrl?: string;   
+    fileName?: string;  
+  };
+
+  const memoizedChatMessages = useMemo<Record<number, ChatMessage[]>>(() => {
     return {
       1: [
         {
@@ -132,7 +144,7 @@ export default function LandlordDashboardPage() {
     }
   }, [])
 
-  const [chatMessages, setChatMessages] = useState(memoizedChatMessages)
+  const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>(memoizedChatMessages);
   const [isEditing, setIsEditing] = useState(false)
   const [mockTenantInfo, setMockTenantInfo] = useState({
     name: "Alice Johnson",
@@ -238,6 +250,9 @@ export default function LandlordDashboardPage() {
         try {
           const base64String = reader.result.split(',')[1];
           const reqId = Date.now().toString();
+
+          const fileUrl = URL.createObjectURL(file);
+          const fileName = file.name;
   
           const response = await fetch('/api/verify-doc', {
             method: 'POST',
@@ -272,17 +287,32 @@ export default function LandlordDashboardPage() {
   
             setNotification({ message: 'Document successfully verified.', type: 'success' });
           } else {
-            const reason = data.error_message ;
-            const severity = data.severity;
-            const type = data.doc_type;
-
-            if(data.isTampered){
-              setNotification({ message: 'Verification failed: Document is tampered.', type: 'error' });
-            } else {
-              setNotification({ message: 'Verification failed: Document is tampered.', type: 'error' });
-              alert(`Severity: ${severity}`)
-              alert(`Document Type: ${type}`)
+            setNotification({ message: 'Verification failed: Try again later.', type: 'error' });
+            if (data.severity && data.doc_type) {
+              alert(`Severity: ${data.severity}`);
+              alert(`Document Type: ${data.doc_type}`);
             }
+          
+            //NOTICE: This snippet should be moved to the successful block once API token is acquired. 
+            //It is only sitting here for testing purposes! 
+            if (activeChat !== null) {
+              setChatMessages((prev) => ({
+                ...prev,
+                [activeChat]: [
+                  ...prev[activeChat],
+                  {
+                    sender: "You",
+                    content: `Uploaded file: `,
+                    fileUrl,
+                    fileName,
+                    timestamp: new Date().toISOString(),
+                    type: "file",
+                  },
+                ],
+              }));
+            } 
+                        
+          
           }
         } catch (error) {
           console.error('Upload or verification error:', error);
@@ -579,6 +609,17 @@ export default function LandlordDashboardPage() {
                                 </Button>
                               )}
                             </div>
+                            ) : msg.type === "file" ? (
+                              <div className="flex items-center space-x-2 justify-end">
+                                <a
+                                  href={msg.fileUrl}
+                                  download={msg.fileName}
+                                  className="text-blue-600 underline flex items-center space-x-1"
+                                >
+                                  <Download className="w-4 h-4" />
+                                  <span>{msg.fileName}</span>
+                                </a>
+                              </div>
                           ) : msg.type === "verification" ? (
                             <div className="bg-green-100 p-3 rounded-3xl">
                               <p>{msg.content}</p>
