@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { CheckCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 import { MyListings } from "./components/my-listings"
-import { MapPin } from "lucide-react"
+import { MapPin, Send, FileUp } from "lucide-react"
 
 
 // Mock data
@@ -595,7 +595,7 @@ export default function LandlordDashboardPage() {
                         </div>
                       ))}
                     </div>
-                    <div ref = {dummyRef}></div>
+                    
                     <div className="flex space-x-2">
                       <Input
                         value={message}
@@ -603,11 +603,12 @@ export default function LandlordDashboardPage() {
                         placeholder="Type your message..."
                         className="rounded-3xl flex-1"
                       />
-                      <Button onClick={handleSendMessage} className="rounded-3xl px-6 bg-blue-500 hover:bg-blue-400">
-                        Send
+                      <Button onClick={handleSendMessage} className="rounded-3xl px-3 bg-blue-500 hover:bg-blue-400 text-white">
+                        <Send className="w-5 h-5" />
                       </Button>
-                      <Button onClick={handleDocumentUpload} className="rounded-3xl px-6 text-white ">
-                        Upload
+
+                      <Button onClick={handleDocumentUpload} className="rounded-3xl px-3 bg-gray-600 hover:bg-gray-500 text-white">
+                        <FileUp className="w-5 h-5" />
                       </Button>
                       <Button onClick={handleGenerateContract} className="rounded-3xl px-6 bg-emerald-600 text-white hover:bg-emerald-500">
                         Generate

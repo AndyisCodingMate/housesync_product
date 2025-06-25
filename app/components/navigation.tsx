@@ -27,6 +27,8 @@ import {
   Home,
   Menu,
   X,
+  Send, 
+  FileUp
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
