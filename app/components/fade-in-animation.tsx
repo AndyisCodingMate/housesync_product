@@ -1,14 +1,17 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import type { ReactNode } from "react"
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 interface FadeInAnimationProps {
-  children: ReactNode
-  duration?: number
+  children: ReactNode;
+  duration?: number;
 }
 
-export function FadeInAnimation({ children, duration = 0.5 }: FadeInAnimationProps) {
+export function FadeInAnimation({
+  children,
+  duration = 0.5,
+}: FadeInAnimationProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -18,7 +21,7 @@ export function FadeInAnimation({ children, duration = 0.5 }: FadeInAnimationPro
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
 export function SlowFadeInAnimation({ children }: { children: ReactNode }) {
@@ -31,6 +34,5 @@ export function SlowFadeInAnimation({ children }: { children: ReactNode }) {
     >
       {children}
     </motion.div>
-  )
+  );
 }
-

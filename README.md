@@ -12,7 +12,6 @@ You can clone the repository using either HTTPS or SSH:
 
 <pre>git clone https://github.com/AndyisCodingMate/housesync_product.git </pre>
 
-
 - **SSH:**
 
 <pre>git clone git@github.com:AndyisCodingMate/housesync_product.git </pre>
@@ -42,7 +41,6 @@ If you encounter problems related to React version or peer dependencies, run:
 
 <pre>npm install --legacy-peer-deps</pre>
 
-
 Then try running the development server again.
 
 ---
@@ -52,8 +50,6 @@ Then try running the development server again.
 Once the server is running, open your browser and go to:
 
 <pre>http://localhost:3000</pre>
-
-
 
 You should see your Next.js application running in the local environment.
 

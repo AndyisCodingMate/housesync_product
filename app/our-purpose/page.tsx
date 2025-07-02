@@ -1,8 +1,22 @@
-import { FadeInAnimation, SlowFadeInAnimation } from "../components/fade-in-animation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Shield, Users, Lightbulb, Globe, Heart, Zap, Home, TrendingUp, Linkedin, Mail } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import {
+  FadeInAnimation,
+  SlowFadeInAnimation,
+} from "../components/fade-in-animation";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Shield,
+  Users,
+  Lightbulb,
+  Globe,
+  Heart,
+  Zap,
+  Home,
+  TrendingUp,
+  Linkedin,
+  Mail,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 // Values section content
 const values = [
@@ -15,63 +29,74 @@ const values = [
   {
     icon: Users,
     title: "Community",
-    description: "We foster a sense of belonging and connection among international students and property owners.",
+    description:
+      "We foster a sense of belonging and connection among international students and property owners.",
   },
   {
     icon: Lightbulb,
     title: "Innovation",
-    description: "We continuously innovate to provide cutting-edge solutions for housing challenges.",
+    description:
+      "We continuously innovate to provide cutting-edge solutions for housing challenges.",
   },
   {
     icon: Globe,
     title: "Global Perspective",
-    description: "We embrace diversity and cater to the unique needs of international students from all backgrounds.",
+    description:
+      "We embrace diversity and cater to the unique needs of international students from all backgrounds.",
   },
   {
     icon: Heart,
     title: "Empathy",
-    description: "We approach every interaction with understanding and compassion for our users' experiences.",
+    description:
+      "We approach every interaction with understanding and compassion for our users' experiences.",
   },
   {
     icon: Zap,
     title: "Efficiency",
-    description: "We strive to make the rental process as smooth and efficient as possible for all parties involved.",
+    description:
+      "We strive to make the rental process as smooth and efficient as possible for all parties involved.",
   },
-]
+];
 
 // Mission points content
 const missionPoints = [
   {
     icon: Home,
     title: "Safe Housing",
-    description: "Provide secure and comfortable housing options for international students.",
+    description:
+      "Provide secure and comfortable housing options for international students.",
   },
   {
     icon: Globe,
     title: "Cultural Bridge",
-    description: "Foster understanding between international students and local communities.",
+    description:
+      "Foster understanding between international students and local communities.",
   },
   {
     icon: Shield,
     title: "Fraud Prevention",
-    description: "Implement robust verification processes to eliminate rental scams.",
+    description:
+      "Implement robust verification processes to eliminate rental scams.",
   },
   {
     icon: Zap,
     title: "Streamlined Process",
-    description: "Simplify the rental process for both students and property owners.",
+    description:
+      "Simplify the rental process for both students and property owners.",
   },
   {
     icon: Users,
     title: "Community Building",
-    description: "Create a supportive network for international students adapting to new environments.",
+    description:
+      "Create a supportive network for international students adapting to new environments.",
   },
   {
     icon: TrendingUp,
     title: "Market Efficiency",
-    description: "Improve the overall efficiency and transparency of the student housing market.",
+    description:
+      "Improve the overall efficiency and transparency of the student housing market.",
   },
-]
+];
 
 // Team members content
 const teamMembers = [
@@ -102,7 +127,7 @@ const teamMembers = [
     linkedin: "https://linkedin.com",
     email: "ariel@housesync.com",
   },
-]
+];
 
 export default function OurPurposePage() {
   return (
@@ -119,21 +144,28 @@ export default function OurPurposePage() {
                 <span className="text-[#00ae89]">House</span>
                 <span className="text-black">Sync</span>
               </Link>
-              , our purpose is to revolutionize the way international students find and secure housing, creating a
-              seamless, safe, and enriching experience for students and property owners alike.
+              , our purpose is to revolutionize the way international students
+              find and secure housing, creating a seamless, safe, and enriching
+              experience for students and property owners alike.
             </p>
           </SlowFadeInAnimation>
 
           {/* Mission Section */}
           <div className="bg-white rounded-lg shadow-lg p-8 mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-center">Our Core Mission</h2>
+            <h2 className="text-3xl font-bold mb-4 text-center">
+              Our Core Mission
+            </h2>
             <p className="text-lg text-gray-600 text-center">
-              To leverage technology and community to create a trusted platform that simplifies the housing journey for
-              international students, fostering global connections and ensuring peace of mind for all parties involved.
+              To leverage technology and community to create a trusted platform
+              that simplifies the housing journey for international students,
+              fostering global connections and ensuring peace of mind for all
+              parties involved.
             </p>
           </div>
 
-          <h3 className="text-2xl font-bold text-center mb-8">How We Achieve Our Mission</h3>
+          <h3 className="text-2xl font-bold text-center mb-8">
+            How We Achieve Our Mission
+          </h3>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
             {missionPoints.map((point, index) => (
@@ -173,17 +205,20 @@ export default function OurPurposePage() {
           <div className="bg-[#00ae89] rounded-lg shadow-lg p-8 text-center text-white mb-16">
             <h2 className="text-3xl font-bold mb-4">Join Us in Our Mission</h2>
             <p className="text-lg">
-              Whether you're an international student seeking a home away from home, or a property owner looking to make
-              a positive impact, we invite you to be part of our mission. Together, we can create a more connected,
-              secure, and welcoming world for students across the globe.
+              Whether you're an international student seeking a home away from
+              home, or a property owner looking to make a positive impact, we
+              invite you to be part of our mission. Together, we can create a
+              more connected, secure, and welcoming world for students across
+              the globe.
             </p>
           </div>
 
           {/* Team Section */}
           <h2 className="text-3xl font-bold text-center mb-8">Our Team</h2>
           <p className="text-xl text-center text-gray-600 mb-12 max-w-3xl mx-auto">
-            Meet the dedicated professionals behind HouseSync. Our team is committed to revolutionizing student housing
-            and creating a seamless experience for both students and property owners.
+            Meet the dedicated professionals behind HouseSync. Our team is
+            committed to revolutionizing student housing and creating a seamless
+            experience for both students and property owners.
           </p>
 
           <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3 mb-16">
@@ -198,8 +233,12 @@ export default function OurPurposePage() {
                       className="rounded-lg object-cover object-center"
                     />
                   </div>
-                  <h2 className="text-2xl font-semibold text-center mb-2">{member.name}</h2>
-                  <p className="text-[#00ae89] text-center mb-4">{member.role}</p>
+                  <h2 className="text-2xl font-semibold text-center mb-2">
+                    {member.name}
+                  </h2>
+                  <p className="text-[#00ae89] text-center mb-4">
+                    {member.role}
+                  </p>
                   <p className="text-gray-600 text-center mb-6">{member.bio}</p>
                   <div className="flex justify-center space-x-4">
                     <a
@@ -210,7 +249,10 @@ export default function OurPurposePage() {
                     >
                       <Linkedin className="h-6 w-6" />
                     </a>
-                    <a href={`mailto:${member.email}`} className="text-gray-600 hover:text-[#00ae89]">
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="text-gray-600 hover:text-[#00ae89]"
+                    >
                       <Mail className="h-6 w-6" />
                     </a>
                   </div>
@@ -221,6 +263,5 @@ export default function OurPurposePage() {
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

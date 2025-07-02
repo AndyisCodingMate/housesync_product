@@ -1,6 +1,7 @@
 const testimonials = [
   {
-    content: "HouseSync made finding the perfect tenant for my property a breeze. The AI matching is spot-on!",
+    content:
+      "HouseSync made finding the perfect tenant for my property a breeze. The AI matching is spot-on!",
     author: "Sarah Johnson",
     role: "Landlord, New York",
   },
@@ -16,7 +17,7 @@ const testimonials = [
     author: "Emily Rodriguez",
     role: "Property Manager, Chicago",
   },
-]
+];
 
 export default function TestimonialsSection() {
   return (
@@ -26,14 +27,20 @@ export default function TestimonialsSection() {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Trusted by renters and landlords alike
           </h2>
-          <p className="mt-4 text-lg text-gray-500">Here's what our users have to say about HouseSync</p>
+          <p className="mt-4 text-lg text-gray-500">
+            Here's what our users have to say about HouseSync
+          </p>
         </div>
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="rounded-lg bg-white p-6 shadow-md">
-              <p className="text-gray-600">&ldquo;{testimonial.content}&rdquo;</p>
+              <p className="text-gray-600">
+                &ldquo;{testimonial.content}&rdquo;
+              </p>
               <div className="mt-4">
-                <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                <p className="font-semibold text-gray-900">
+                  {testimonial.author}
+                </p>
                 <p className="text-sm text-gray-500">{testimonial.role}</p>
               </div>
             </div>
@@ -41,6 +48,5 @@ export default function TestimonialsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
-

@@ -1,23 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, Clock, PlusCircle, MapPin, Bed, Bath, Home } from "lucide-react"
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle,
+  Clock,
+  PlusCircle,
+  MapPin,
+  Bed,
+  Bath,
+  Home,
+} from "lucide-react";
 
 type Listing = {
-  id: number
-  title: string
-  location: string
-  price: number
-  status: "available" | "unavailable"
-  image: string
-  verification: "Verified" | "Pending" | "Rejected"
-  address: string
-  bedrooms: number
-  bathrooms: number
-}
+  id: number;
+  title: string;
+  location: string;
+  price: number;
+  status: "available" | "unavailable";
+  image: string;
+  verification: "Verified" | "Pending" | "Rejected";
+  address: string;
+  bedrooms: number;
+  bathrooms: number;
+};
 
 const initialListings: Listing[] = [
   {
@@ -59,25 +67,28 @@ const initialListings: Listing[] = [
     bedrooms: 1,
     bathrooms: 1,
   },
-]
+];
 
 export function MyListings() {
-  const [listings] = useState<Listing[]>(initialListings)
-  const router = useRouter()
+  const [listings] = useState<Listing[]>(initialListings);
+  const router = useRouter();
 
   const handleEdit = (id: number) => {
-    router.push(`/dev/landlord-dashboard/edit-listing/${id}`)
-  }
+    router.push(`/dev/landlord-dashboard/edit-listing/${id}`);
+  };
 
   const handleAddListing = () => {
-    router.push("/dev/landlord-dashboard/add-listing")
-  }
+    router.push("/dev/landlord-dashboard/add-listing");
+  };
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">My Listings</h2>
-        <Button onClick={handleAddListing} className="flex items-center space-x-2 rounded-3xl px-6">
+        <Button
+          onClick={handleAddListing}
+          className="flex items-center space-x-2 rounded-3xl px-6"
+        >
           <PlusCircle className="w-4 h-4" />
           <span>Add Listing</span>
         </Button>
@@ -89,7 +100,12 @@ export function MyListings() {
             className="relative rounded-3xl overflow-hidden cursor-pointer h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2 bg-white border-none"
           >
             <div className="relative h-[300px] w-full">
-              <Image src={listing.image || "/placeholder.svg"} alt={listing.title} fill className="object-cover" />
+              <Image
+                src={listing.image || "/placeholder.svg"}
+                alt={listing.title}
+                fill
+                className="object-cover"
+              />
               {/* Price tag */}
               <div className="absolute top-3 right-3 bg-[#00ae89] text-white px-4 py-1.5 rounded-full text-sm font-medium">
                 ${listing.price}/mo
@@ -97,22 +113,30 @@ export function MyListings() {
 
               {/* Overlay positioned on the left */}
               <div className="absolute bottom-3 left-3 w-[60%] bg-white/90 backdrop-blur-[2px] p-5 rounded-3xl">
-                <h3 className="text-lg font-bold text-black leading-tight mb-1">{listing.title}</h3>
+                <h3 className="text-lg font-bold text-black leading-tight mb-1">
+                  {listing.title}
+                </h3>
 
                 <div className="flex items-center text-[#00ae89] mb-2">
                   <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                  <span className="text-sm text-gray-700">{listing.location}</span>
+                  <span className="text-sm text-gray-700">
+                    {listing.location}
+                  </span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-2">
                   <div className="flex items-center">
                     <Bed className="h-4 w-4 mr-1 flex-shrink-0 text-[#00ae89]" />
-                    <span className="text-sm text-black">{listing.bedrooms} bed</span>
+                    <span className="text-sm text-black">
+                      {listing.bedrooms} bed
+                    </span>
                   </div>
 
                   <div className="flex items-center">
                     <Bath className="h-4 w-4 mr-1 flex-shrink-0 text-[#00ae89]" />
-                    <span className="text-sm text-black">{listing.bathrooms} bath</span>
+                    <span className="text-sm text-black">
+                      {listing.bathrooms} bath
+                    </span>
                   </div>
 
                   <div className="flex items-center">
@@ -137,15 +161,22 @@ export function MyListings() {
                           : "bg-red-100 text-red-600"
                     }`}
                   >
-                    {listing.verification === "Verified" && <CheckCircle className="w-3 h-3 mr-1 inline" />}
-                    {listing.verification === "Pending" && <Clock className="w-3 h-3 mr-1 inline" />}
+                    {listing.verification === "Verified" && (
+                      <CheckCircle className="w-3 h-3 mr-1 inline" />
+                    )}
+                    {listing.verification === "Pending" && (
+                      <Clock className="w-3 h-3 mr-1 inline" />
+                    )}
                     {listing.verification}
                   </span>
                 </div>
               </div>
             </div>
             <div className="p-4">
-              <Button onClick={() => handleEdit(listing.id)} className="w-full rounded-3xl px-6">
+              <Button
+                onClick={() => handleEdit(listing.id)}
+                className="w-full rounded-3xl px-6"
+              >
                 Edit
               </Button>
             </div>
@@ -153,6 +184,5 @@ export function MyListings() {
         ))}
       </div>
     </>
-  )
+  );
 }
-

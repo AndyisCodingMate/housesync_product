@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import FeaturesSection from "./components/features-section"
-import TestimonialsSection from "./components/testimonials-section"
-import CtaSection from "./components/cta-section"
-import Link from "next/link"
-import { motion } from "framer-motion"
+import FeaturesSection from "./components/features-section";
+import TestimonialsSection from "./components/testimonials-section";
+import CtaSection from "./components/cta-section";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
@@ -101,7 +101,9 @@ export default function Home() {
             >
               <span className="flex items-center justify-center">
                 Get Started
-                <span className="ml-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">→</span>
+                <span className="ml-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  →
+                </span>
               </span>
             </Link>
 
@@ -122,6 +124,5 @@ export default function Home() {
         <CtaSection />
       </div>
     </div>
-  )
+  );
 }
-

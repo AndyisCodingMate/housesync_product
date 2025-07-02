@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
+import React, { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
+import Link from "next/link";
+import Image from "next/image";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,8 +12,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
 import {
   Users,
   BookOpen,
@@ -27,11 +29,36 @@ import {
   Home,
   Menu,
   X,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Navigation() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   return (
     <nav className="bg-white shadow-sm relative z-10">
@@ -59,7 +86,10 @@ export default function Navigation() {
                     <NavigationMenuContent>
                       <div className="p-4 w-[300px]">
                         <ul className="space-y-2">
-                          <ListItem href="/get-started" title="Get Started Guide">
+                          <ListItem
+                            href="/get-started"
+                            title="Get Started Guide"
+                          >
                             <BookOpen className="w-5 h-5 text-[#00ae89]" />
                           </ListItem>
                           <ListItem href="/our-customers" title="Our Customers">
@@ -68,7 +98,10 @@ export default function Navigation() {
                           <ListItem href="/pricing" title="Pricing">
                             <DollarSign className="w-5 h-5 text-[#00ae89]" />
                           </ListItem>
-                          <ListItem href="/privacy-policy" title="Privacy Policy">
+                          <ListItem
+                            href="/privacy-policy"
+                            title="Privacy Policy"
+                          >
                             <Shield className="w-5 h-5 text-[#00ae89]" />
                           </ListItem>
                         </ul>
@@ -131,10 +164,16 @@ export default function Navigation() {
                     <NavigationMenuContent>
                       <div className="p-4 w-[300px]">
                         <ul className="space-y-2">
-                          <ListItem href="/dev/landlord-dashboard" title="Landlord Dashboard">
+                          <ListItem
+                            href="/dev/landlord-dashboard"
+                            title="Landlord Dashboard"
+                          >
                             <Home className="w-5 h-5 text-[#00ae89]" />
                           </ListItem>
-                          <ListItem href="/dev/tenant-dashboard" title="Tenant Dashboard">
+                          <ListItem
+                            href="/dev/tenant-dashboard"
+                            title="Tenant Dashboard"
+                          >
                             <UserCircle className="w-5 h-5 text-[#00ae89]" />
                           </ListItem>
                           <ListItem href="/dev/housesafe" title="HouseSafe">
@@ -148,15 +187,42 @@ export default function Navigation() {
               </NavigationMenu>
             </div>
           </div>
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-base font-medium text-black hover:text-gray-900" asChild>
-              <Link href="/sign-up">Sign up</Link>
-            </Button>
-            <Button className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full" asChild>
-              <Link href="/login">Log in</Link>
-            </Button>
-          </div>
 
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-base font-medium text-black hover:text-gray-900"
+                  asChild
+                >
+                  <Link href="/account">My Account</Link>
+                </Button>
+                <Button
+                  className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-base font-medium text-black hover:text-gray-900"
+                  asChild
+                >
+                  <Link href="/sign-up">Sign up</Link>
+                </Button>
+                <Button
+                  className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full"
+                  asChild
+                >
+                  <Link href="/login">Log in</Link>
+                </Button>
+              </>
+            )}
+          </div>
           {/* Mobile menu button */}
           <div className="flex md:hidden">
             <button
@@ -261,30 +327,31 @@ export default function Navigation() {
         </div>
       )}
     </nav>
-  )
+  );
 }
 
-const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWithoutRef<"a">>(
-  ({ className, title, children, ...props }, ref) => {
-    return (
-      <li>
-        <NavigationMenuLink asChild>
-          <a
-            ref={ref}
-            className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-              className,
-            )}
-            {...props}
-          >
-            <div className="flex items-center text-sm font-medium leading-none">
-              {children}
-              <span className="ml-2">{title}</span>
-            </div>
-          </a>
-        </NavigationMenuLink>
-      </li>
-    )
-  },
-)
-ListItem.displayName = "ListItem"
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className,
+          )}
+          {...props}
+        >
+          <div className="flex items-center text-sm font-medium leading-none">
+            {children}
+            <span className="ml-2">{title}</span>
+          </div>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";

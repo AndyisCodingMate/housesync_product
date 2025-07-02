@@ -1,42 +1,42 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { FadeInAnimation } from "../components/fade-in-animation"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FadeInAnimation } from "../components/fade-in-animation";
+import { motion, AnimatePresence } from "framer-motion";
 
-type UserType = "tenant" | "landlord" | null
-type TenantType = "local" | "international" | null
+type UserType = "tenant" | "landlord" | null;
+type TenantType = "local" | "international" | null;
 
 export default function GetStartedPage() {
-  const [userType, setUserType] = useState<UserType>(null)
-  const [tenantType, setTenantType] = useState<TenantType>(null)
-  const [showHeading, setShowHeading] = useState(false)
+  const [userType, setUserType] = useState<UserType>(null);
+  const [tenantType, setTenantType] = useState<TenantType>(null);
+  const [showHeading, setShowHeading] = useState(false);
 
   useEffect(() => {
     // Trigger the animation after component mounts
-    setShowHeading(true)
-  }, [])
+    setShowHeading(true);
+  }, []);
 
   const handleChoice = (choice: UserType) => {
-    setUserType(choice)
-    setTenantType(null)
-  }
+    setUserType(choice);
+    setTenantType(null);
+  };
 
   const handleTenantChoice = (choice: TenantType) => {
-    setTenantType(choice)
-  }
+    setTenantType(choice);
+  };
 
   const handleBack = () => {
     if (tenantType !== null) {
-      setTenantType(null)
+      setTenantType(null);
     } else {
-      setUserType(null)
+      setUserType(null);
     }
-  }
+  };
 
   return (
     <div
@@ -91,7 +91,10 @@ export default function GetStartedPage() {
                       />
                       <h2
                         className="text-2xl font-semibold tracking-wide text-black"
-                        style={{ fontFamily: "Segoe UI, system-ui, sans-serif", letterSpacing: "0.5px" }}
+                        style={{
+                          fontFamily: "Segoe UI, system-ui, sans-serif",
+                          letterSpacing: "0.5px",
+                        }}
                       >
                         Tenant
                       </h2>
@@ -111,7 +114,10 @@ export default function GetStartedPage() {
                       />
                       <h2
                         className="text-2xl font-semibold tracking-wide text-black"
-                        style={{ fontFamily: "Segoe UI, system-ui, sans-serif", letterSpacing: "0.5px" }}
+                        style={{
+                          fontFamily: "Segoe UI, system-ui, sans-serif",
+                          letterSpacing: "0.5px",
+                        }}
                       >
                         Landlord
                       </h2>
@@ -142,7 +148,10 @@ export default function GetStartedPage() {
                       />
                       <h2
                         className="text-2xl font-semibold tracking-wide text-black"
-                        style={{ fontFamily: "Segoe UI, system-ui, sans-serif", letterSpacing: "0.5px" }}
+                        style={{
+                          fontFamily: "Segoe UI, system-ui, sans-serif",
+                          letterSpacing: "0.5px",
+                        }}
                       >
                         Local Tenant
                       </h2>
@@ -162,7 +171,10 @@ export default function GetStartedPage() {
                       />
                       <h2
                         className="text-2xl font-semibold tracking-wide text-black"
-                        style={{ fontFamily: "Segoe UI, system-ui, sans-serif", letterSpacing: "0.5px" }}
+                        style={{
+                          fontFamily: "Segoe UI, system-ui, sans-serif",
+                          letterSpacing: "0.5px",
+                        }}
                       >
                         International Tenant
                       </h2>
@@ -170,7 +182,11 @@ export default function GetStartedPage() {
                   </Card>
                 </div>
                 <div className="mt-6 text-center">
-                  <Button onClick={handleBack} variant="outline" className="bg-white shadow-sm rounded-xl">
+                  <Button
+                    onClick={handleBack}
+                    variant="outline"
+                    className="bg-white shadow-sm rounded-xl"
+                  >
                     Go Back
                   </Button>
                 </div>
@@ -197,24 +213,52 @@ export default function GetStartedPage() {
                       <ol className="list-decimal list-inside space-y-2">
                         <li>Sign up for a HouseSync landlord account</li>
                         <li>Verify your identity and property ownership</li>
-                        <li>List your properties with detailed descriptions and high-quality photos</li>
+                        <li>
+                          List your properties with detailed descriptions and
+                          high-quality photos
+                        </li>
                         <li>Set your rental criteria and preferences</li>
-                        <li>Use our AI-powered tenant matching system to find ideal renters</li>
-                        <li>Review applications and conduct background checks</li>
-                        <li>Communicate with potential tenants through our secure platform</li>
+                        <li>
+                          Use our AI-powered tenant matching system to find
+                          ideal renters
+                        </li>
+                        <li>
+                          Review applications and conduct background checks
+                        </li>
+                        <li>
+                          Communicate with potential tenants through our secure
+                          platform
+                        </li>
                         <li>Create and send lease agreements electronically</li>
-                        <li>Set up rent collection through our secure payment system</li>
-                        <li>Manage your properties efficiently with our tools and insights</li>
+                        <li>
+                          Set up rent collection through our secure payment
+                          system
+                        </li>
+                        <li>
+                          Manage your properties efficiently with our tools and
+                          insights
+                        </li>
                       </ol>
                     ) : tenantType === "local" ? (
                       <ol className="list-decimal list-inside space-y-2">
                         <li>Create an account on HouseSync</li>
-                        <li>Complete your profile with personal information and preferences</li>
-                        <li>Browse available properties that match your criteria</li>
+                        <li>
+                          Complete your profile with personal information and
+                          preferences
+                        </li>
+                        <li>
+                          Browse available properties that match your criteria
+                        </li>
                         <li>Schedule viewings through the platform</li>
                         <li>Submit rental applications securely</li>
-                        <li>Use our AI-powered matching system to find your ideal home</li>
-                        <li>Communicate with landlords through our secure messaging system</li>
+                        <li>
+                          Use our AI-powered matching system to find your ideal
+                          home
+                        </li>
+                        <li>
+                          Communicate with landlords through our secure
+                          messaging system
+                        </li>
                         <li>Sign your lease agreement electronically</li>
                         <li>Set up rent payments through our platform</li>
                         <li>Enjoy your new home!</li>
@@ -222,24 +266,48 @@ export default function GetStartedPage() {
                     ) : (
                       <ol className="list-decimal list-inside space-y-2">
                         <li>Create an account on HouseSync</li>
-                        <li>Complete your profile with personal information and preferences</li>
-                        <li>Upload necessary documentation for international verification</li>
-                        <li>Browse available properties that match your criteria</li>
+                        <li>
+                          Complete your profile with personal information and
+                          preferences
+                        </li>
+                        <li>
+                          Upload necessary documentation for international
+                          verification
+                        </li>
+                        <li>
+                          Browse available properties that match your criteria
+                        </li>
                         <li>Schedule virtual viewings through the platform</li>
                         <li>Submit rental applications securely</li>
-                        <li>Use our AI-powered matching system to find your ideal home</li>
-                        <li>Communicate with landlords through our secure messaging system</li>
+                        <li>
+                          Use our AI-powered matching system to find your ideal
+                          home
+                        </li>
+                        <li>
+                          Communicate with landlords through our secure
+                          messaging system
+                        </li>
                         <li>Sign your lease agreement electronically</li>
                         <li>Set up rent payments through our platform</li>
-                        <li>Access our international student resources and community</li>
+                        <li>
+                          Access our international student resources and
+                          community
+                        </li>
                         <li>Enjoy your new home!</li>
                       </ol>
                     )}
                     <div className="mt-6 flex justify-between">
-                      <Button onClick={handleBack} variant="outline" className="bg-white shadow-sm rounded-xl">
+                      <Button
+                        onClick={handleBack}
+                        variant="outline"
+                        className="bg-white shadow-sm rounded-xl"
+                      >
                         Go Back
                       </Button>
-                      <Button asChild className="bg-[#00ae89] hover:bg-[#009b7a] text-white rounded-full group">
+                      <Button
+                        asChild
+                        className="bg-[#00ae89] hover:bg-[#009b7a] text-white rounded-full group"
+                      >
                         <Link href="/sign-up">
                           <span className="flex items-center">
                             Let's Go
@@ -258,6 +326,5 @@ export default function GetStartedPage() {
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,14 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Search, DollarSign, Home, Tag, MapPin, Bed, Bath } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, DollarSign, Home, Tag, MapPin, Bed, Bath } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data for listings
 const mockListings = [
@@ -84,7 +90,7 @@ const mockListings = [
     bedrooms: 1,
     bathrooms: 1,
   },
-]
+];
 
 const amenityOptions = [
   "Street Parking",
@@ -99,30 +105,35 @@ const amenityOptions = [
   "Rooftop Terrace",
   "Study Room",
   "Bike Storage",
-]
+];
 
 export default function MarketplacePage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [budgetRange, setBudgetRange] = useState([0, 5000])
-  const [propertyType, setPropertyType] = useState<string>("any")
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [budgetRange, setBudgetRange] = useState([0, 5000]);
+  const [propertyType, setPropertyType] = useState<string>("any");
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
 
   const handleBudgetChange = (newValues: number[]) => {
-    setBudgetRange(newValues)
-  }
+    setBudgetRange(newValues);
+  };
 
   const filteredListings = useMemo(() => {
     return mockListings.filter((listing) => {
       const matchesSearch =
         listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        listing.location.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesPrice = listing.price >= budgetRange[0] && listing.price <= budgetRange[1]
-      const matchesType = propertyType === "any" || listing.type === propertyType
+        listing.location.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesPrice =
+        listing.price >= budgetRange[0] && listing.price <= budgetRange[1];
+      const matchesType =
+        propertyType === "any" || listing.type === propertyType;
       const matchesAmenities =
-        selectedAmenities.length === 0 || selectedAmenities.every((amenity) => listing.amenities.includes(amenity))
-      return matchesSearch && matchesPrice && matchesType && matchesAmenities
-    })
-  }, [searchTerm, budgetRange, propertyType, selectedAmenities])
+        selectedAmenities.length === 0 ||
+        selectedAmenities.every((amenity) =>
+          listing.amenities.includes(amenity),
+        );
+      return matchesSearch && matchesPrice && matchesType && matchesAmenities;
+    });
+  }, [searchTerm, budgetRange, propertyType, selectedAmenities]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -132,20 +143,27 @@ export default function MarketplacePage() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-12">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <h1 className="text-4xl font-bold mb-2 text-black text-center">Marketplace</h1>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl font-bold mb-2 text-black text-center">
+            Marketplace
+          </h1>
           <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-            Find your perfect home with our curated selection of verified properties
+            Find your perfect home with our curated selection of verified
+            properties
           </p>
         </motion.div>
 
@@ -171,31 +189,44 @@ export default function MarketplacePage() {
 
             <div className="grid gap-6 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="budget-range" className="text-sm font-medium flex items-center gap-1">
+                <Label
+                  htmlFor="budget-range"
+                  className="text-sm font-medium flex items-center gap-1"
+                >
                   <DollarSign className="h-4 w-4 text-[#00ae89]" />
                   Budget Range
                 </Label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                      $
+                    </span>
                     <Input
                       type="number"
                       placeholder="Min price"
                       value={budgetRange[0]}
                       onChange={(e) =>
-                        handleBudgetChange([Math.min(Number(e.target.value), budgetRange[1]), budgetRange[1]])
+                        handleBudgetChange([
+                          Math.min(Number(e.target.value), budgetRange[1]),
+                          budgetRange[1],
+                        ])
                       }
                       className="pl-8 rounded-xl border-gray-300"
                     />
                   </div>
                   <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                      $
+                    </span>
                     <Input
                       type="number"
                       placeholder="Max price"
                       value={budgetRange[1]}
                       onChange={(e) =>
-                        handleBudgetChange([budgetRange[0], Math.max(Number(e.target.value), budgetRange[0])])
+                        handleBudgetChange([
+                          budgetRange[0],
+                          Math.max(Number(e.target.value), budgetRange[0]),
+                        ])
                       }
                       className="pl-8 rounded-xl border-gray-300"
                     />
@@ -204,12 +235,18 @@ export default function MarketplacePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="property-type" className="text-sm font-medium flex items-center gap-1">
+                <Label
+                  htmlFor="property-type"
+                  className="text-sm font-medium flex items-center gap-1"
+                >
                   <Home className="h-4 w-4 text-[#00ae89]" />
                   Property Type
                 </Label>
                 <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectTrigger id="property-type" className="rounded-xl border-gray-300">
+                  <SelectTrigger
+                    id="property-type"
+                    className="rounded-xl border-gray-300"
+                  >
                     <SelectValue placeholder="Select property type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -236,8 +273,10 @@ export default function MarketplacePage() {
                         checked={selectedAmenities.includes(amenity)}
                         onCheckedChange={(checked) => {
                           setSelectedAmenities(
-                            checked ? [...selectedAmenities, amenity] : selectedAmenities.filter((a) => a !== amenity),
-                          )
+                            checked
+                              ? [...selectedAmenities, amenity]
+                              : selectedAmenities.filter((a) => a !== amenity),
+                          );
                         }}
                         className="text-[#00ae89] border-gray-300 rounded"
                       />
@@ -257,7 +296,8 @@ export default function MarketplacePage() {
 
         <div className="mb-4 flex justify-between items-center">
           <p className="text-gray-600">
-            {filteredListings.length} {filteredListings.length === 1 ? "property" : "properties"} found
+            {filteredListings.length}{" "}
+            {filteredListings.length === 1 ? "property" : "properties"} found
           </p>
           <Select defaultValue="featured">
             <SelectTrigger className="w-[180px]">
@@ -280,7 +320,10 @@ export default function MarketplacePage() {
         >
           {filteredListings.map((listing) => (
             <motion.div key={listing.id} variants={item}>
-              <Link href={`/marketplace/${listing.id}`} className="block h-full">
+              <Link
+                href={`/marketplace/${listing.id}`}
+                className="block h-full"
+              >
                 <div className="relative rounded-2xl overflow-hidden cursor-pointer h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2 bg-white border-none">
                   <div className="relative h-[300px] w-full">
                     <Image
@@ -296,33 +339,46 @@ export default function MarketplacePage() {
 
                     {/* Overlay positioned on the left */}
                     <div className="absolute bottom-3 left-3 w-[60%] bg-white/90 backdrop-blur-[2px] p-2.5 rounded-xl">
-                      <h3 className="text-lg font-bold text-black leading-tight mb-0.5">{listing.title}</h3>
+                      <h3 className="text-lg font-bold text-black leading-tight mb-0.5">
+                        {listing.title}
+                      </h3>
 
                       <div className="flex items-center text-[#00ae89] mb-1">
                         <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{listing.location}</span>
+                        <span className="text-sm text-gray-700">
+                          {listing.location}
+                        </span>
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mb-1">
                         <div className="flex items-center">
                           <Bed className="h-3.5 w-3.5 mr-0.5 flex-shrink-0 text-[#00ae89]" />
-                          <span className="text-sm text-black">{listing.bedrooms} bed</span>
+                          <span className="text-sm text-black">
+                            {listing.bedrooms} bed
+                          </span>
                         </div>
 
                         <div className="flex items-center">
                           <Bath className="h-3.5 w-3.5 mr-0.5 flex-shrink-0 text-[#00ae89]" />
-                          <span className="text-sm text-black">{listing.bathrooms} bath</span>
+                          <span className="text-sm text-black">
+                            {listing.bathrooms} bath
+                          </span>
                         </div>
 
                         <div className="flex items-center">
                           <Home className="h-3.5 w-3.5 mr-0.5 flex-shrink-0 text-[#00ae89]" />
-                          <span className="text-sm text-black">{listing.type}</span>
+                          <span className="text-sm text-black">
+                            {listing.type}
+                          </span>
                         </div>
                       </div>
 
                       <div className="flex flex-wrap gap-1">
                         {listing.amenities.map((amenity, index) => (
-                          <span key={index} className="bg-[#e6f7f3] text-[#00ae89] px-1.5 py-0.5 rounded-full text-xs">
+                          <span
+                            key={index}
+                            className="bg-[#e6f7f3] text-[#00ae89] px-1.5 py-0.5 rounded-full text-xs"
+                          >
                             {amenity}
                           </span>
                         ))}
@@ -343,6 +399,5 @@ export default function MarketplacePage() {
         )}
       </div>
     </div>
-  )
+  );
 }
-

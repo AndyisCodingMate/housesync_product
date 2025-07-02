@@ -1,4 +1,4 @@
-import { X, Instagram, Linkedin } from "lucide-react"
+import { X, Instagram, Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -34,10 +34,11 @@ export default function Footer() {
           </a>
         </div>
         <div className="mt-8 md:mt-0 md:order-1">
-          <p className="text-center text-base text-gray-400">&copy; 2025 HouseSync, Inc. All rights reserved.</p>
+          <p className="text-center text-base text-gray-400">
+            &copy; 2025 HouseSync, Inc. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-

@@ -62,7 +62,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-
 /* Custom navigation dropdown positioning */
 .navigation-menu-content {
   position: absolute;
@@ -97,4 +96,3 @@
   left: 0 !important;
   transform-origin: top left !important;
 }
-

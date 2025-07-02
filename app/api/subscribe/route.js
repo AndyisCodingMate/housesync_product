@@ -22,7 +22,7 @@ export async function POST(req) {
           status: response.status,
           message: data,
         }),
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -32,10 +32,8 @@ export async function POST(req) {
     });
   } catch (error) {
     console.error("Error in /api/subscribe route:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
   }
 }
-

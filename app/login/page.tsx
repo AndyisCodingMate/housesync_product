@@ -1,47 +1,62 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { FadeInAnimation } from "../components/fade-in-animation"
-import Link from "next/link"
-import { Eye, EyeOff, Mail, Facebook } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FadeInAnimation } from "../components/fade-in-animation";
+import Link from "next/link";
+import { Eye, EyeOff, Mail, Facebook } from "lucide-react";
+import Image from "next/image";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
 
-    // In a real app, you would handle the login logic here
-    console.log("Form submitted:", formData)
+    if (error) {
+      console.error("Login error:", error.message);
+    } else {
+      console.log("User logged in:", data);
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
+    }
 
-    setIsLoading(false)
-    // Redirect to dashboard after successful login
-  }
+    setIsLoading(false);
+  };
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#e6f7f3] py-16">
@@ -59,9 +74,12 @@ export default function LoginPage() {
                     className="h-28 w-auto"
                   />
                 </div>
-                <CardTitle className="text-2xl font-bold text-center mb-2">Welcome Back</CardTitle>
+                <CardTitle className="text-2xl font-bold text-center mb-2">
+                  Welcome Back
+                </CardTitle>
                 <CardDescription className="text-center">
-                  Log in to your <span className="text-[#00ae89] font-bold">House</span>
+                  Log in to your{" "}
+                  <span className="text-[#00ae89] font-bold">House</span>
                   <span className="text-black font-bold">Sync</span> account
                 </CardDescription>
               </CardHeader>
@@ -81,7 +99,10 @@ export default function LoginPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <Label htmlFor="password">Password</Label>
-                      <Link href="/forgot-password" className="text-xs text-[#00ae89] hover:underline">
+                      <Link
+                        href="/forgot-password"
+                        className="text-xs text-[#00ae89] hover:underline"
+                      >
                         Forgot password?
                       </Link>
                     </div>
@@ -99,7 +120,11 @@ export default function LoginPage() {
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                         onClick={togglePasswordVisibility}
                       >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -118,16 +143,24 @@ export default function LoginPage() {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">or continue with</span>
+                      <span className="px-2 bg-white text-gray-500">
+                        or continue with
+                      </span>
                     </div>
                   </div>
 
                   <div className="mt-6 grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="flex items-center justify-center rounded-full py-4">
+                    <Button
+                      variant="outline"
+                      className="flex items-center justify-center rounded-full py-4"
+                    >
                       <Mail className="w-5 h-5 mr-2 text-red-500" />
                       Gmail
                     </Button>
-                    <Button variant="outline" className="flex items-center justify-center rounded-full py-4">
+                    <Button
+                      variant="outline"
+                      className="flex items-center justify-center rounded-full py-4"
+                    >
                       <Facebook className="w-5 h-5 mr-2 text-blue-600" />
                       Facebook
                     </Button>
@@ -137,7 +170,10 @@ export default function LoginPage() {
               <CardFooter className="flex flex-col space-y-4">
                 <div className="text-center text-sm">
                   Don't have an account?{" "}
-                  <Link href="/get-started" className="text-[#00ae89] hover:underline font-bold">
+                  <Link
+                    href="/get-started"
+                    className="text-[#00ae89] hover:underline font-bold"
+                  >
                     Sign up
                   </Link>
                 </div>
@@ -147,6 +183,5 @@ export default function LoginPage() {
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,7 +1,13 @@
-import { Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { FadeInAnimation } from "../components/fade-in-animation"
+import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FadeInAnimation } from "../components/fade-in-animation";
 
 const plans = [
   {
@@ -41,7 +47,7 @@ const plans = [
       "Enhanced lease management services",
     ],
   },
-]
+];
 
 export default function PricingPage() {
   return (
@@ -50,9 +56,12 @@ export default function PricingPage() {
         <FadeInAnimation>
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold tracking-tight">
-              Simple, transparent <span className="text-[#00ae89]">pricing</span>
+              Simple, transparent{" "}
+              <span className="text-[#00ae89]">pricing</span>
             </h1>
-            <p className="mt-4 text-lg text-gray-600">Choose the perfect plan for your property management needs</p>
+            <p className="mt-4 text-lg text-gray-600">
+              Choose the perfect plan for your property management needs
+            </p>
           </div>
           <div className="grid gap-6 lg:gap-8 md:grid-cols-3 max-w-7xl mx-auto">
             {plans.map((plan) => (
@@ -61,14 +70,20 @@ export default function PricingPage() {
                 className="relative flex flex-col p-6 transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl"
               >
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold text-[#00ae89]">{plan.name}</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-[#00ae89]">
+                    {plan.name}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                   <div className="mb-8">
                     <span className="text-5xl font-bold">
                       ${plan.price.split(".")[0]}
-                      <sup className="text-2xl font-bold">{plan.price.split(".")[1]}</sup>
-                      <span className="text-xl font-normal text-gray-500 ml-2">USD/month</span>
+                      <sup className="text-2xl font-bold">
+                        {plan.price.split(".")[1]}
+                      </sup>
+                      <span className="text-xl font-normal text-gray-500 ml-2">
+                        USD/month
+                      </span>
                     </span>
                   </div>
                   <ul className="space-y-3">
@@ -83,7 +98,9 @@ export default function PricingPage() {
                 <CardFooter>
                   <Button
                     className={`w-full rounded-full text-lg py-6 ${
-                      plan.current ? "bg-gray-400 hover:bg-gray-500" : "bg-[#00ae89] hover:bg-[#009b7a]"
+                      plan.current
+                        ? "bg-gray-400 hover:bg-gray-500"
+                        : "bg-[#00ae89] hover:bg-[#009b7a]"
                     }`}
                   >
                     {plan.current ? "Your current plan" : "Upgrade plan"}
@@ -95,6 +112,5 @@ export default function PricingPage() {
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

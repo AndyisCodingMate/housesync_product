@@ -1,8 +1,8 @@
-import { FadeInAnimation } from "../components/fade-in-animation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import Image from "next/image"
+import { FadeInAnimation } from "../components/fade-in-animation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function ContactPage() {
   return (
@@ -30,12 +30,17 @@ export default function ContactPage() {
                     </div>
                     <div className="flex-grow">
                       <h2 className="text-xl font-semibold mb-2">Email Us</h2>
-                      <Link href="mailto:andypoon@housesync.us" className="text-[#00ae89] hover:underline">
+                      <Link
+                        href="mailto:andypoon@housesync.us"
+                        className="text-[#00ae89] hover:underline"
+                      >
                         andypoon@housesync.us
                       </Link>
                     </div>
                     <Button asChild className="bg-[#00ae89] hover:bg-[#009b7a]">
-                      <Link href="mailto:andypoon@housesync.us">Send Email</Link>
+                      <Link href="mailto:andypoon@housesync.us">
+                        Send Email
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -56,7 +61,10 @@ export default function ContactPage() {
                     </div>
                     <div className="flex-grow">
                       <h2 className="text-xl font-semibold mb-2">Call Us</h2>
-                      <Link href="tel:+16282079782" className="text-[#00ae89] hover:underline">
+                      <Link
+                        href="tel:+16282079782"
+                        className="text-[#00ae89] hover:underline"
+                      >
                         +1 (628) 207-9782
                       </Link>
                     </div>
@@ -69,13 +77,17 @@ export default function ContactPage() {
             </div>
 
             <div className="mt-12 text-center text-gray-600">
-              <p>We're here to help! Contact us through any of the channels above.</p>
-              <p className="mt-2">Our team will get back to you as soon as possible.</p>
+              <p>
+                We're here to help! Contact us through any of the channels
+                above.
+              </p>
+              <p className="mt-2">
+                Our team will get back to you as soon as possible.
+              </p>
             </div>
           </div>
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

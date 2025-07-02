@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ImageSlideshow } from "./image-slideshow"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ImageSlideshow } from "./image-slideshow";
 
 export default function HeroSection() {
   return (
@@ -27,13 +27,16 @@ export default function HeroSection() {
             <div className="sm:text-center lg:text-left">
               <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                 <span className="block xl:inline">Simplify your rental</span>{" "}
-                <span className="block text-[#00ae89] xl:inline">experience with AI</span>
+                <span className="block text-[#00ae89] xl:inline">
+                  experience with AI
+                </span>
               </h1>
 
               <p className="mt-3 text-base text-gray-600 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                HouseSync leverages advanced AI and personalized services to connect verified tenants with landlords,
-                ensuring a secure and efficient rental experience. Say goodbye to scams and tedious applications, and
-                hello to your ideal home or tenant.
+                HouseSync leverages advanced AI and personalized services to
+                connect verified tenants with landlords, ensuring a secure and
+                efficient rental experience. Say goodbye to scams and tedious
+                applications, and hello to your ideal home or tenant.
               </p>
 
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
@@ -70,6 +73,5 @@ export default function HeroSection() {
         <ImageSlideshow />
       </div>
     </div>
-  )
+  );
 }
-

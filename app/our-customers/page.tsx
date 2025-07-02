@@ -1,8 +1,11 @@
-import { FadeInAnimation, SlowFadeInAnimation } from "../components/fade-in-animation"
-import { Card, CardContent } from "@/components/ui/card"
-import { GraduationCap, Home, Quote } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import {
+  FadeInAnimation,
+  SlowFadeInAnimation,
+} from "../components/fade-in-animation";
+import { Card, CardContent } from "@/components/ui/card";
+import { GraduationCap, Home, Quote } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 const customerTypes = [
   {
@@ -17,7 +20,7 @@ const customerTypes = [
     description:
       "Landlords and property managers looking to connect with reliable student tenants, including those from diverse international backgrounds.",
   },
-]
+];
 
 const testimonials = [
   {
@@ -41,7 +44,7 @@ const testimonials = [
       "Thanks to HouseSync, I found not just an apartment, but a real home and community during my studies abroad.",
     image: "/placeholder.svg?height=100&width=100",
   },
-]
+];
 
 export default function OurCustomersPage() {
   return (
@@ -58,9 +61,10 @@ export default function OurCustomersPage() {
                 <span className="text-[#00ae89]">House</span>
                 <span className="text-black">Sync</span>
               </Link>
-              , we're proud to serve a diverse community of students, including international students from across the
-              globe, and property owners. Our platform brings these groups together, creating mutually beneficial
-              relationships and fostering cultural exchange.
+              , we're proud to serve a diverse community of students, including
+              international students from across the globe, and property owners.
+              Our platform brings these groups together, creating mutually
+              beneficial relationships and fostering cultural exchange.
             </p>
           </SlowFadeInAnimation>
 
@@ -80,7 +84,9 @@ export default function OurCustomersPage() {
             ))}
           </div>
 
-          <h2 className="text-3xl font-bold text-center mb-8">What Our Customers Say</h2>
+          <h2 className="text-3xl font-bold text-center mb-8">
+            What Our Customers Say
+          </h2>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((testimonial, index) => (
@@ -96,12 +102,16 @@ export default function OurCustomersPage() {
                     />
                     <div>
                       <h3 className="font-semibold">{testimonial.name}</h3>
-                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                      <p className="text-sm text-gray-500">
+                        {testimonial.role}
+                      </p>
                     </div>
                   </div>
                   <div className="relative">
                     <Quote className="h-8 w-8 text-[#00ae89] opacity-20 absolute top-0 left-0 -mt-2 -ml-3" />
-                    <p className="text-gray-600 italic relative z-10 pl-4">"{testimonial.quote}"</p>
+                    <p className="text-gray-600 italic relative z-10 pl-4">
+                      "{testimonial.quote}"
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -112,9 +122,11 @@ export default function OurCustomersPage() {
             <div className="mt-16 bg-white rounded-lg shadow-lg p-8 text-center">
               <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
               <p className="text-lg text-gray-600 mb-6">
-                Whether you're a student looking for your ideal living space, an international student seeking a home
-                away from home, or a property owner wanting to connect with reliable tenants from diverse backgrounds,
-                HouseSync is here to support you every step of the way.
+                Whether you're a student looking for your ideal living space, an
+                international student seeking a home away from home, or a
+                property owner wanting to connect with reliable tenants from
+                diverse backgrounds, HouseSync is here to support you every step
+                of the way.
               </p>
               <Link
                 href="/get-started"
@@ -127,6 +139,5 @@ export default function OurCustomersPage() {
         </FadeInAnimation>
       </div>
     </div>
-  )
+  );
 }
-

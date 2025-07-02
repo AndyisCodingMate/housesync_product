@@ -1,35 +1,57 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock data for listings
 const mockListings = [
-  { id: 1, title: "Cozy Apartment in Downtown", address: "123 Main St", price: 1500 },
-  { id: 2, title: "Spacious House with Garden", address: "456 Oak Ave", price: 2500 },
-  { id: 3, title: "Modern Loft near Tech Hub", address: "789 Pine St", price: 1800 },
-]
+  {
+    id: 1,
+    title: "Cozy Apartment in Downtown",
+    address: "123 Main St",
+    price: 1500,
+  },
+  {
+    id: 2,
+    title: "Spacious House with Garden",
+    address: "456 Oak Ave",
+    price: 2500,
+  },
+  {
+    id: 3,
+    title: "Modern Loft near Tech Hub",
+    address: "789 Pine St",
+    price: 1800,
+  },
+];
 
 export default function DashboardPage() {
-  const [listings, setListings] = useState(mockListings)
-  const [newListing, setNewListing] = useState({ title: "", address: "", price: "" })
+  const [listings, setListings] = useState(mockListings);
+  const [newListing, setNewListing] = useState({
+    title: "",
+    address: "",
+    price: "",
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setNewListing((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setNewListing((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleAddListing = (e: React.FormEvent) => {
-    e.preventDefault()
-    const id = listings.length + 1
-    setListings((prev) => [...prev, { ...newListing, id, price: Number(newListing.price) }])
-    setNewListing({ title: "", address: "", price: "" })
-  }
+    e.preventDefault();
+    const id = listings.length + 1;
+    setListings((prev) => [
+      ...prev,
+      { ...newListing, id, price: Number(newListing.price) },
+    ]);
+    setNewListing({ title: "", address: "", price: "" });
+  };
 
   return (
     <Tabs defaultValue="my-listings">
@@ -61,7 +83,10 @@ export default function DashboardPage() {
           <CardContent>
             <form onSubmit={handleAddListing} className="space-y-4">
               <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Title
                 </label>
                 <Input
@@ -74,7 +99,10 @@ export default function DashboardPage() {
                 />
               </div>
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Address
                 </label>
                 <Input
@@ -87,7 +115,10 @@ export default function DashboardPage() {
                 />
               </div>
               <div>
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Price ($/month)
                 </label>
                 <Input
@@ -120,6 +151,5 @@ export default function DashboardPage() {
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
-

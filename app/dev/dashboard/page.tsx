@@ -1,4 +1,4 @@
-import DashboardPage from "../../dashboard/page"
+import DashboardPage from "../../dashboard/page";
 
 export default function DevDashboardPage() {
   return (
@@ -6,6 +6,5 @@ export default function DevDashboardPage() {
       <h1 className="text-3xl font-bold mb-8">Dev: Landlord Dashboard</h1>
       <DashboardPage />
     </div>
-  )
+  );
 }
-

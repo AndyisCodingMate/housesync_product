@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import type { DateRange } from "react-day-picker"
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { DateRange } from "react-day-picker";
 
 // Mock data for a single listing
 const mockListing = {
@@ -21,31 +27,35 @@ const mockListing = {
   image:
     "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
   availableDates: Array.from({ length: 365 }, (_, i) => {
-    const date = new Date()
-    date.setDate(date.getDate() + i)
-    return date
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    return date;
   }),
-}
+};
 
 export default function ListingDetailPage() {
-  const params = useParams()
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const params = useParams();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // In a real application, you would fetch the listing data based on the ID
   // For this mock, we'll just use the hardcoded data
-  const listing = mockListing
+  const listing = mockListing;
 
   const handleBooking = () => {
     if (dateRange?.from && dateRange?.to) {
-      alert(`Booking requested from ${dateRange.from.toDateString()} to ${dateRange.to.toDateString()}`)
+      alert(
+        `Booking requested from ${dateRange.from.toDateString()} to ${dateRange.to.toDateString()}`,
+      );
     } else {
-      alert("Please select a date range before booking")
+      alert("Please select a date range before booking");
     }
-  }
+  };
 
   const handleContact = () => {
-    alert("Contacting landlord... This feature is not implemented in the mock version.")
-  }
+    alert(
+      "Contacting landlord... This feature is not implemented in the mock version.",
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -90,7 +100,10 @@ export default function ListingDetailPage() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button onClick={handleBooking} className="bg-[#00ae89] hover:bg-[#009b7a]">
+          <Button
+            onClick={handleBooking}
+            className="bg-[#00ae89] hover:bg-[#009b7a]"
+          >
             Book Now
           </Button>
           <Button variant="outline" onClick={handleContact}>
@@ -99,6 +112,5 @@ export default function ListingDetailPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
-

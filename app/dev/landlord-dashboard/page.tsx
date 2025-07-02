@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Label } from "@/components/ui/label"
-import { CheckCircle, XCircle } from "lucide-react"
-import Link from "next/link"
-import { MyListings } from "./components/my-listings"
-import { MapPin } from "lucide-react"
+import { useState, useMemo } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { CheckCircle, XCircle } from "lucide-react";
+import Link from "next/link";
+import { MyListings } from "./components/my-listings";
+import { MapPin } from "lucide-react";
 
 // Mock data
 const mockContracts = [
@@ -33,7 +39,7 @@ const mockContracts = [
     image:
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
   },
-]
+];
 
 const mockSavedListings = [
   {
@@ -63,7 +69,7 @@ const mockSavedListings = [
     image:
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
   },
-]
+];
 
 const mockChats = [
   {
@@ -80,11 +86,11 @@ const mockChats = [
     timestamp: "2023-05-09T09:15:00",
     avatar: "https://i.pravatar.cc/150?img=2",
   },
-]
+];
 
 export default function LandlordDashboardPage() {
-  const [activeChat, setActiveChat] = useState<number | null>(null)
-  const [message, setMessage] = useState("")
+  const [activeChat, setActiveChat] = useState<number | null>(null);
+  const [message, setMessage] = useState("");
 
   const memoizedChatMessages = useMemo(() => {
     return {
@@ -94,7 +100,11 @@ export default function LandlordDashboardPage() {
           content: "Hello! I'm interested in showing you the property.",
           timestamp: "2023-05-10T14:00:00",
         },
-        { sender: "You", content: "Great! I'd love to see it.", timestamp: "2023-05-10T14:05:00" },
+        {
+          sender: "You",
+          content: "Great! I'd love to see it.",
+          timestamp: "2023-05-10T14:05:00",
+        },
         {
           sender: "John",
           content:
@@ -110,13 +120,17 @@ export default function LandlordDashboardPage() {
           content: "Hi! I've sent you the lease agreement for review.",
           timestamp: "2023-05-09T09:15:00",
         },
-        { sender: "You", content: "Thank you, I'll take a look at it.", timestamp: "2023-05-09T09:20:00" },
+        {
+          sender: "You",
+          content: "Thank you, I'll take a look at it.",
+          timestamp: "2023-05-09T09:20:00",
+        },
       ],
-    }
-  }, [])
+    };
+  }, []);
 
-  const [chatMessages, setChatMessages] = useState(memoizedChatMessages)
-  const [isEditing, setIsEditing] = useState(false)
+  const [chatMessages, setChatMessages] = useState(memoizedChatMessages);
+  const [isEditing, setIsEditing] = useState(false);
   const [mockTenantInfo, setMockTenantInfo] = useState({
     name: "Alice Johnson",
     email: "alice@example.com",
@@ -125,13 +139,13 @@ export default function LandlordDashboardPage() {
     occupation: "Software Engineer",
     isVerified: true,
     profilePicture: "/placeholder.svg?height=100&width=100",
-  })
+  });
 
   const handleSave = () => {
     // In a real application, you would send the updated data to the server here
-    console.log("Saving updated info:", mockTenantInfo)
-    setIsEditing(false)
-  }
+    console.log("Saving updated info:", mockTenantInfo);
+    setIsEditing(false);
+  };
 
   const handleSendMessage = () => {
     if (activeChat && message.trim()) {
@@ -139,17 +153,24 @@ export default function LandlordDashboardPage() {
         ...prev,
         [activeChat]: [
           ...(prev[activeChat] || []),
-          { sender: "You", content: message, timestamp: new Date().toISOString() },
+          {
+            sender: "You",
+            content: message,
+            timestamp: new Date().toISOString(),
+          },
         ],
-      }))
-      setMessage("")
+      }));
+      setMessage("");
 
       // Simulate John's responses for the specified chat sequence
       if (activeChat === 1) {
-        const currentMessages = chatMessages[1]
-        const lastMessage = currentMessages[currentMessages.length - 1]
+        const currentMessages = chatMessages[1];
+        const lastMessage = currentMessages[currentMessages.length - 1];
 
-        if (lastMessage.type === "request" && lastMessage.status === "pending") {
+        if (
+          lastMessage.type === "request" &&
+          lastMessage.status === "pending"
+        ) {
           setTimeout(() => {
             setChatMessages((prev) => ({
               ...prev,
@@ -171,8 +192,8 @@ export default function LandlordDashboardPage() {
                   action: "sign_contract",
                 },
               ],
-            }))
-          }, 1000)
+            }));
+          }, 1000);
         } else if (
           lastMessage.type === "request" &&
           lastMessage.status === "completed" &&
@@ -196,40 +217,46 @@ export default function LandlordDashboardPage() {
                   type: "check_in",
                 },
               ],
-            }))
-          }, 1000)
+            }));
+          }, 1000);
         }
       }
     }
-  }
+  };
 
   const handleDocumentUpload = () => {
     if (activeChat === 1) {
       setChatMessages((prev) => ({
         ...prev,
         1: prev[1].map((msg) =>
-          msg.type === "request" && msg.status === "pending" ? { ...msg, status: "completed" } : msg,
+          msg.type === "request" && msg.status === "pending"
+            ? { ...msg, status: "completed" }
+            : msg,
         ),
-      }))
+      }));
     }
-  }
+  };
 
   const handleContractSign = () => {
     if (activeChat === 1) {
       setChatMessages((prev) => ({
         ...prev,
         1: prev[1].map((msg) =>
-          msg.type === "request" && msg.status === "pending" && msg.action === "sign_contract"
+          msg.type === "request" &&
+          msg.status === "pending" &&
+          msg.action === "sign_contract"
             ? { ...msg, status: "completed" }
             : msg,
         ),
-      }))
+      }));
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center text-black">Landlord Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center text-black">
+        Landlord Dashboard
+      </h1>
       <Tabs defaultValue="contracts">
         <div className="flex justify-center mb-4">
           <TabsList className="bg-gray-100 p-1.5 rounded-3xl overflow-hidden">
@@ -268,7 +295,10 @@ export default function LandlordDashboardPage() {
         <TabsContent value="contracts">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {mockContracts.map((contract) => (
-              <Link href={`/dev/landlord-dashboard/contract/${contract.id}`} key={contract.id}>
+              <Link
+                href={`/dev/landlord-dashboard/contract/${contract.id}`}
+                key={contract.id}
+              >
                 <div className="relative rounded-3xl overflow-hidden cursor-pointer h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2 bg-white border-none">
                   <div className="relative h-[300px] w-full">
                     <Image
@@ -284,11 +314,15 @@ export default function LandlordDashboardPage() {
 
                     {/* Overlay positioned on the left */}
                     <div className="absolute bottom-3 left-3 w-[60%] bg-white/90 backdrop-blur-[2px] p-5 rounded-3xl">
-                      <h3 className="text-lg font-bold text-black leading-tight mb-1">{contract.property}</h3>
+                      <h3 className="text-lg font-bold text-black leading-tight mb-1">
+                        {contract.property}
+                      </h3>
 
                       <div className="flex items-center text-[#00ae89] mb-2">
                         <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">Contract Details</span>
+                        <span className="text-sm text-gray-700">
+                          Contract Details
+                        </span>
                       </div>
 
                       <div className="flex flex-col gap-1 text-sm">
@@ -308,7 +342,10 @@ export default function LandlordDashboardPage() {
         <TabsContent value="saved-listings">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {mockSavedListings.map((listing) => (
-              <Link href={`/dev/landlord-dashboard/saved-listings/${listing.id}`} key={listing.id}>
+              <Link
+                href={`/dev/landlord-dashboard/saved-listings/${listing.id}`}
+                key={listing.id}
+              >
                 <div className="relative rounded-3xl overflow-hidden cursor-pointer h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2 bg-white border-none">
                   <div className="relative h-[300px] w-full">
                     <Image
@@ -324,11 +361,15 @@ export default function LandlordDashboardPage() {
 
                     {/* Overlay positioned on the left */}
                     <div className="absolute bottom-3 left-3 w-[60%] bg-white/90 backdrop-blur-[2px] p-5 rounded-3xl">
-                      <h3 className="text-lg font-bold text-black leading-tight mb-1">{listing.title}</h3>
+                      <h3 className="text-lg font-bold text-black leading-tight mb-1">
+                        {listing.title}
+                      </h3>
 
                       <div className="flex items-center text-[#00ae89] mb-2">
                         <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{listing.location}</span>
+                        <span className="text-sm text-gray-700">
+                          {listing.location}
+                        </span>
                       </div>
 
                       <Badge
@@ -370,7 +411,9 @@ export default function LandlordDashboardPage() {
                     <li
                       key={chat.id}
                       className={`p-3 rounded-3xl cursor-pointer ${
-                        activeChat === chat.id ? "bg-gray-100" : "hover:bg-gray-50"
+                        activeChat === chat.id
+                          ? "bg-gray-100"
+                          : "hover:bg-gray-50"
                       }`}
                       onClick={() => setActiveChat(chat.id)}
                     >
@@ -384,7 +427,9 @@ export default function LandlordDashboardPage() {
                         />
                         <div>
                           <p className="font-semibold">{chat.name}</p>
-                          <p className="text-sm text-gray-500">{chat.lastMessage}</p>
+                          <p className="text-sm text-gray-500">
+                            {chat.lastMessage}
+                          </p>
                         </div>
                       </div>
                     </li>
@@ -395,7 +440,9 @@ export default function LandlordDashboardPage() {
             <Card className="md:col-span-2 rounded-3xl">
               <CardHeader>
                 <CardTitle>
-                  {activeChat ? mockChats.find((chat) => chat.id === activeChat)?.name : "Select a conversation"}
+                  {activeChat
+                    ? mockChats.find((chat) => chat.id === activeChat)?.name
+                    : "Select a conversation"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -407,15 +454,22 @@ export default function LandlordDashboardPage() {
                           key={index}
                           className={`p-3 rounded-3xl ${msg.sender === "You" ? "bg-blue-100 text-right" : "bg-gray-100"}`}
                         >
-                          {msg.type === "request" && msg.status === "pending" ? (
+                          {msg.type === "request" &&
+                          msg.status === "pending" ? (
                             <div>
                               <p>{msg.content}</p>
                               {msg.action === "sign_contract" ? (
-                                <Button onClick={handleContractSign} className="mt-2 rounded-3xl px-6">
+                                <Button
+                                  onClick={handleContractSign}
+                                  className="mt-2 rounded-3xl px-6"
+                                >
                                   Sign Contract
                                 </Button>
                               ) : (
-                                <Button onClick={handleDocumentUpload} className="mt-2 rounded-3xl px-6">
+                                <Button
+                                  onClick={handleDocumentUpload}
+                                  className="mt-2 rounded-3xl px-6"
+                                >
                                   Upload Documents
                                 </Button>
                               )}
@@ -427,12 +481,16 @@ export default function LandlordDashboardPage() {
                           ) : msg.type === "check_in" ? (
                             <div className="bg-yellow-100 p-3 rounded-3xl">
                               <p>{msg.content}</p>
-                              <Button className="mt-2 rounded-3xl px-6">Check In</Button>
+                              <Button className="mt-2 rounded-3xl px-6">
+                                Check In
+                              </Button>
                             </div>
                           ) : (
                             <p>{msg.content}</p>
                           )}
-                          <span className="text-xs text-gray-500">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -443,7 +501,10 @@ export default function LandlordDashboardPage() {
                         placeholder="Type your message..."
                         className="rounded-3xl"
                       />
-                      <Button onClick={handleSendMessage} className="rounded-3xl px-6">
+                      <Button
+                        onClick={handleSendMessage}
+                        className="rounded-3xl px-6"
+                      >
                         Send
                       </Button>
                     </div>
@@ -472,13 +533,23 @@ export default function LandlordDashboardPage() {
                     <div>
                       <Input
                         value={mockTenantInfo.name}
-                        onChange={(e) => setMockTenantInfo({ ...mockTenantInfo, name: e.target.value })}
+                        onChange={(e) =>
+                          setMockTenantInfo({
+                            ...mockTenantInfo,
+                            name: e.target.value,
+                          })
+                        }
                         disabled={!isEditing}
                         className="rounded-3xl"
                       />
                       <Input
                         value={mockTenantInfo.occupation}
-                        onChange={(e) => setMockTenantInfo({ ...mockTenantInfo, occupation: e.target.value })}
+                        onChange={(e) =>
+                          setMockTenantInfo({
+                            ...mockTenantInfo,
+                            occupation: e.target.value,
+                          })
+                        }
                         disabled={!isEditing}
                         className="mt-2 rounded-3xl"
                       />
@@ -488,7 +559,12 @@ export default function LandlordDashboardPage() {
                     <Label>Email</Label>
                     <Input
                       value={mockTenantInfo.email}
-                      onChange={(e) => setMockTenantInfo({ ...mockTenantInfo, email: e.target.value })}
+                      onChange={(e) =>
+                        setMockTenantInfo({
+                          ...mockTenantInfo,
+                          email: e.target.value,
+                        })
+                      }
                       disabled={!isEditing}
                       className="rounded-3xl"
                     />
@@ -497,7 +573,12 @@ export default function LandlordDashboardPage() {
                     <Label>Phone</Label>
                     <Input
                       value={mockTenantInfo.phone}
-                      onChange={(e) => setMockTenantInfo({ ...mockTenantInfo, phone: e.target.value })}
+                      onChange={(e) =>
+                        setMockTenantInfo({
+                          ...mockTenantInfo,
+                          phone: e.target.value,
+                        })
+                      }
                       disabled={!isEditing}
                       className="rounded-3xl"
                     />
@@ -507,7 +588,12 @@ export default function LandlordDashboardPage() {
                     <Input
                       type="date"
                       value={mockTenantInfo.dateOfBirth}
-                      onChange={(e) => setMockTenantInfo({ ...mockTenantInfo, dateOfBirth: e.target.value })}
+                      onChange={(e) =>
+                        setMockTenantInfo({
+                          ...mockTenantInfo,
+                          dateOfBirth: e.target.value,
+                        })
+                      }
                       disabled={!isEditing}
                       className="rounded-3xl"
                     />
@@ -552,7 +638,10 @@ export default function LandlordDashboardPage() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-end space-x-4">
-              <Button onClick={() => setIsEditing(!isEditing)} className="rounded-3xl px-6">
+              <Button
+                onClick={() => setIsEditing(!isEditing)}
+                className="rounded-3xl px-6"
+              >
                 {isEditing ? "Cancel" : "Edit"}
               </Button>
               {isEditing && (
@@ -565,6 +654,5 @@ export default function LandlordDashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-
