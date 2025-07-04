@@ -27,6 +27,7 @@ export default function LoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,6 +37,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage(""); // Clear previous error message
 
     const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -44,10 +46,22 @@ export default function LoginPage() {
     });
 
     if (error) {
+      if (
+        error.message.toLowerCase().includes("email not confirmed") ||
+        error.message.toLowerCase().includes("confirm your email")
+      ) {
+        setErrorMessage(
+          "Your email address is not confirmed. Please check your inbox for a confirmation email."
+        );
+      } else if (
+        error.message.toLowerCase().includes("invalid login credentials")
+      ) {
+        setErrorMessage("Invalid email or password.");
+      } else {
+        setErrorMessage(error.message);
+      }
       console.error("Login error:", error.message);
     } else {
-      console.log("User logged in:", data);
-      // Redirect to dashboard
       window.location.href = "/dashboard";
     }
 

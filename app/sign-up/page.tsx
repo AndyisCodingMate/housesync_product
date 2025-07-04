@@ -54,6 +54,12 @@ export default function SignUpPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
     const supabase = createClient();
     const verifiedRole = roleMap[formData.userType] || "tenant";
 
