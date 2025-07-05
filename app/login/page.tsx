@@ -14,17 +14,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeInAnimation } from "../components/fade-in-animation";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Facebook } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { countryCodes } from "@/lib/country-codes";
 
 export default function LoginPage() {
+  const [loginType, setLoginType] = useState<"email" | "phone">("email");
   const [formData, setFormData] = useState({
     email: "",
+    phone: "",
     password: "",
   });
+  const [countryCode, setCountryCode] = useState("+1-us"); // Default to US
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -34,35 +46,147 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Function to check user's signup method
+  const checkUserSignupMethod = async (email?: string, phone?: string) => {
+    const supabase = createClient();
+
+    try {
+      if (email) {
+        // Check if user exists with email
+        const { data: emailUser, error: emailError } = await supabase
+          .from("auth.users")
+          .select("email, phone, raw_user_meta_data")
+          .eq("email", email)
+          .single();
+
+        if (emailUser && !emailError) {
+          return {
+            exists: true,
+            signupMethod: emailUser.raw_user_meta_data?.signup_type || "email",
+            hasEmail: !!emailUser.email,
+            hasPhone: !!emailUser.phone,
+          };
+        }
+      }
+
+      if (phone) {
+        // Check if user exists with phone
+        const { data: phoneUser, error: phoneError } = await supabase
+          .from("auth.users")
+          .select("email, phone, raw_user_meta_data")
+          .eq("phone", phone)
+          .single();
+
+        if (phoneUser && !phoneError) {
+          return {
+            exists: true,
+            signupMethod: phoneUser.raw_user_meta_data?.signup_type || "phone",
+            hasEmail: !!phoneUser.email,
+            hasPhone: !!phoneUser.phone,
+          };
+        }
+      }
+
+      return {
+        exists: false,
+        signupMethod: null,
+        hasEmail: false,
+        hasPhone: false,
+      };
+    } catch (error) {
+      console.error("Error checking user signup method:", error);
+      return {
+        exists: false,
+        signupMethod: null,
+        hasEmail: false,
+        hasPhone: false,
+      };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage(""); // Clear previous error message
+    setErrorMessage("");
 
     const supabase = createClient();
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: formData.email,
-      password: formData.password,
-    });
 
-    if (error) {
-      if (
-        error.message.toLowerCase().includes("email not confirmed") ||
-        error.message.toLowerCase().includes("confirm your email")
-      ) {
-        setErrorMessage(
-          "Your email address is not confirmed. Please check your inbox for a confirmation email."
-        );
-      } else if (
-        error.message.toLowerCase().includes("invalid login credentials")
-      ) {
-        setErrorMessage("Invalid email or password.");
+    try {
+      let emailToCheck = "";
+      let phoneToCheck = "";
+
+      if (loginType === "email") {
+        emailToCheck = formData.email;
       } else {
-        setErrorMessage(error.message);
+        // Phone login - extract actual country code from the combined value
+        const actualCountryCode = countryCode.split("-")[0];
+        phoneToCheck = `${actualCountryCode}${formData.phone}`;
       }
-      console.error("Login error:", error.message);
-    } else {
-      window.location.href = "/dashboard";
+
+      // Check user's original signup method
+      const userInfo = await checkUserSignupMethod(emailToCheck, phoneToCheck);
+
+      if (userInfo.exists) {
+        // User exists, check if they're using the correct login method
+        if (loginType !== userInfo.signupMethod) {
+          const correctMethod =
+            userInfo.signupMethod === "email"
+              ? "email address"
+              : "phone number";
+          setErrorMessage(
+            `Please log in with your ${correctMethod} as that's how you originally signed up.`
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      if (loginType === "email") {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) {
+          console.error("Email login error:", error);
+          if (error.message.includes("Invalid login credentials")) {
+            setErrorMessage(
+              "Invalid email or password. Please check your credentials and try again."
+            );
+          } else {
+            setErrorMessage(error.message || "An error occurred during login");
+          }
+        } else {
+          console.log("User logged in:", data);
+          window.location.href = "/dashboard";
+        }
+      } else {
+        // Phone login - extract actual country code from the combined value
+        const actualCountryCode = countryCode.split("-")[0];
+        const fullPhoneNumber = `${actualCountryCode}${formData.phone}`;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          phone: fullPhoneNumber,
+          password: formData.password,
+        });
+
+        if (error) {
+          console.error("Phone login error:", error);
+          if (error.message.includes("Invalid login credentials")) {
+            setErrorMessage(
+              "Invalid phone number or password. Please check your credentials and try again."
+            );
+          } else {
+            setErrorMessage(error.message || "An error occurred during login");
+          }
+        } else {
+          console.log("User logged in:", data);
+          window.location.href = "/dashboard";
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
 
     setIsLoading(false);
@@ -72,13 +196,28 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
+  const getSelectedCountryDisplay = () => {
+    const selected = countryCodes.find(
+      (c) => `${c.code}-${c.key}` === countryCode
+    );
+    if (selected) {
+      return (
+        <div className="flex items-center space-x-2">
+          <span className="text-lg">{selected.flag}</span>
+          <span className="font-mono text-sm">{selected.code}</span>
+        </div>
+      );
+    }
+    return "Select country";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-[#e6f7f3] py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <FadeInAnimation>
           <div className="max-w-md mx-auto">
             <Card className="shadow-lg">
-              <CardHeader className="space-y-2">
+              <CardHeader className="space-y-0.5 pb-2">
                 <div className="flex justify-center">
                   <Image
                     src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/T_Logo1%20copy-CSl6tOI8CF5fPRHGx6CNkyn4dSfZDE.png"
@@ -88,43 +227,111 @@ export default function LoginPage() {
                     className="h-28 w-auto"
                   />
                 </div>
-                <CardTitle className="text-2xl font-bold text-center mb-2">
+                <CardTitle className="text-2xl font-bold text-center">
                   Welcome Back
                 </CardTitle>
                 <CardDescription className="text-center">
-                  Log in to your{" "}
-                  <span className="text-[#00ae89] font-bold">House</span>
-                  <span className="text-black font-bold">Sync</span> account
+                  Sign in to your{" "}
+                  <span className="text-[#00ae89] font-medium">House</span>
+                  <span className="text-black font-medium">Sync</span> account
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
+                {errorMessage && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {errorMessage}
                   </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <Tabs
+                    value={loginType}
+                    onValueChange={(value) =>
+                      setLoginType(value as "email" | "phone")
+                    }
+                    className="w-full"
+                  >
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="email">Email</TabsTrigger>
+                      <TabsTrigger value="phone">Phone</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="email" className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required={loginType === "email"}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="phone" className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <div className="flex space-x-2">
+                          <Select
+                            value={countryCode}
+                            onValueChange={setCountryCode}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue>
+                                {getSelectedCountryDisplay()}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                              {countryCodes.map((country) => (
+                                <SelectItem
+                                  key={country.key}
+                                  value={`${country.code}-${country.key}`}
+                                  className="flex items-center"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-lg">
+                                      {country.flag}
+                                    </span>
+                                    <span className="font-mono text-sm">
+                                      {country.code}
+                                    </span>
+                                    <span className="text-sm text-gray-600">
+                                      {country.name}
+                                    </span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="Enter phone number"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            required={loginType === "phone"}
+                            className="flex-1"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Enter your phone number without the country code
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
                   <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label htmlFor="password">Password</Label>
-                      <Link
-                        href="/forgot-password"
-                        className="text-xs text-[#00ae89] hover:underline"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
                       <Input
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
                         value={formData.password}
                         onChange={handleChange}
                         required
@@ -142,51 +349,30 @@ export default function LoginPage() {
                       </button>
                     </div>
                   </div>
+
                   <Button
                     type="submit"
                     className="w-full bg-[#00ae89] hover:bg-[#009b7a] rounded-full py-6"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Logging in..." : "Log In"}
+                    {isLoading ? "Signing In..." : "Sign In"}
                   </Button>
                 </form>
-
-                <div className="mt-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">
-                        or continue with
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid grid-cols-2 gap-3">
-                    <Button
-                      variant="outline"
-                      className="flex items-center justify-center rounded-full py-4"
-                    >
-                      <Mail className="w-5 h-5 mr-2 text-red-500" />
-                      Gmail
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex items-center justify-center rounded-full py-4"
-                    >
-                      <Facebook className="w-5 h-5 mr-2 text-blue-600" />
-                      Facebook
-                    </Button>
-                  </div>
-                </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
                 <div className="text-center text-sm">
+                  <Link
+                    href="/forgot-password"
+                    className="text-[#00ae89] hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+                <div className="text-center text-sm">
                   Don't have an account?{" "}
                   <Link
-                    href="/get-started"
-                    className="text-[#00ae89] hover:underline font-bold"
+                    href="/sign-up"
+                    className="text-[#00ae89] hover:underline"
                   >
                     Sign up
                   </Link>

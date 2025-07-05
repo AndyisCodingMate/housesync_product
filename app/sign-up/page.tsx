@@ -14,25 +14,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeInAnimation } from "../components/fade-in-animation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createClient } from "@/utils/supabase/client";
+import { countryCodes } from "@/lib/country-codes";
 
 export default function SignUpPage() {
+  const [signupType, setSignupType] = useState<"email" | "phone">("email");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     userType: "tenant", // Default selection
   });
+  const [countryCode, setCountryCode] = useState("+1-us"); // Default to US
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,12 +63,51 @@ export default function SignUpPage() {
     "property-manager": "property_manager",
   };
 
+  // Function to check if email or phone already exists
+  const checkExistingUser = async (email?: string, phone?: string) => {
+    const supabase = createClient();
+
+    try {
+      if (email) {
+        // Check if email exists in auth.users
+        const { data: emailData, error: emailError } = await supabase
+          .from("auth.users")
+          .select("email")
+          .eq("email", email)
+          .single();
+
+        if (emailData && !emailError) {
+          return { exists: true, type: "email" };
+        }
+      }
+
+      if (phone) {
+        // Check if phone exists in auth.users
+        const { data: phoneData, error: phoneError } = await supabase
+          .from("auth.users")
+          .select("phone")
+          .eq("phone", phone)
+          .single();
+
+        if (phoneData && !phoneError) {
+          return { exists: true, type: "phone" };
+        }
+      }
+
+      return { exists: false, type: null };
+    } catch (error) {
+      console.error("Error checking existing user:", error);
+      return { exists: false, type: null };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match.");
+      setErrorMessage("Passwords do not match.");
       setIsLoading(false);
       return;
     }
@@ -63,25 +115,109 @@ export default function SignUpPage() {
     const supabase = createClient();
     const verifiedRole = roleMap[formData.userType] || "tenant";
 
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          verified_role: verifiedRole,
-        },
-      },
-    });
+    try {
+      let emailToCheck = "";
+      let phoneToCheck = "";
 
-    if (error) {
+      if (signupType === "email") {
+        emailToCheck = formData.email;
+      } else {
+        // Phone signup - extract actual country code from the combined value
+        const actualCountryCode = countryCode.split("-")[0];
+        phoneToCheck = `${actualCountryCode}${formData.phone}`;
+      }
+
+      // Check if user already exists
+      const existingUser = await checkExistingUser(emailToCheck, phoneToCheck);
+
+      if (existingUser.exists) {
+        if (existingUser.type === "email") {
+          setErrorMessage(
+            "An account with this email address already exists. Please use a different email or try logging in."
+          );
+        } else if (existingUser.type === "phone") {
+          setErrorMessage(
+            "An account with this phone number already exists. Please use a different phone number or try logging in."
+          );
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      const signUpData: any = {
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            full_name: `${formData.firstName} ${formData.lastName}`,
+            verified_role: verifiedRole,
+            signup_type: signupType,
+          },
+        },
+      };
+
+      if (signupType === "email") {
+        signUpData.email = formData.email;
+      } else {
+        // Phone signup - extract actual country code from the combined value
+        const actualCountryCode = countryCode.split("-")[0];
+        const countryKey = countryCode.split("-")[1];
+        const fullPhoneNumber = `${actualCountryCode}${formData.phone}`;
+
+        // Find the selected country info for additional metadata
+        const selectedCountry = countryCodes.find((c) => c.key === countryKey);
+
+        signUpData.phone = fullPhoneNumber;
+        signUpData.options.data = {
+          ...signUpData.options.data,
+          // Store phone number components for easy access
+          phone_number: fullPhoneNumber, // Full phone with country code
+          country_code: actualCountryCode, // Just the code like "+1"
+          phone_local: formData.phone, // Phone without country code
+          country_name: selectedCountry?.name || "",
+          country_flag: selectedCountry?.flag || "",
+          country_key: countryKey,
+        };
+      }
+
+      const { data, error } = await supabase.auth.signUp(signUpData);
+
+      if (error) {
+        console.error(`${signupType} signup error:`, error);
+
+        // Handle specific Supabase errors for existing users
+        if (error.message.includes("User already registered")) {
+          if (signupType === "email") {
+            setErrorMessage(
+              "An account with this email address already exists. Please use a different email or try logging in."
+            );
+          } else {
+            setErrorMessage(
+              "An account with this phone number already exists. Please use a different phone number or try logging in."
+            );
+          }
+        } else {
+          setErrorMessage(error.message || "An error occurred during signup");
+        }
+      } else {
+        console.log("User created:", data);
+        // For phone signup, user might need to verify OTP
+        if (
+          signupType === "phone" &&
+          data.user &&
+          !data.user.phone_confirmed_at
+        ) {
+          setErrorMessage(
+            "Please check your phone for a verification code and verify your number."
+          );
+        } else {
+          window.location.href = "/dashboard";
+        }
+      }
+    } catch (error) {
       console.error("Signup error:", error);
-      alert(`Signup error: ${error.message || JSON.stringify(error)}`);
-    } else {
-      console.log("User created:", data);
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
 
     setIsLoading(false);
@@ -93,6 +229,21 @@ export default function SignUpPage() {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const getSelectedCountryDisplay = () => {
+    const selected = countryCodes.find(
+      (c) => `${c.code}-${c.key}` === countryCode
+    );
+    if (selected) {
+      return (
+        <div className="flex items-center space-x-2">
+          <span className="text-lg">{selected.flag}</span>
+          <span className="font-mono text-sm">{selected.code}</span>
+        </div>
+      );
+    }
+    return "Select country";
   };
 
   return (
@@ -121,6 +272,12 @@ export default function SignUpPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {errorMessage && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {errorMessage}
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label className="text-base">I am a:</Label>
@@ -176,11 +333,7 @@ export default function SignUpPage() {
                           className="flex-1 cursor-pointer"
                         >
                           <div
-                            className={`font-medium ${
-                              formData.userType === "local-tenant"
-                                ? "text-[#00ae89]"
-                                : ""
-                            }`}
+                            className={`font-medium ${formData.userType === "local-tenant" ? "text-[#00ae89]" : ""}`}
                           >
                             Local Tenant
                           </div>
@@ -206,11 +359,7 @@ export default function SignUpPage() {
                           className="flex-1 cursor-pointer"
                         >
                           <div
-                            className={`font-medium ${
-                              formData.userType === "landlord"
-                                ? "text-[#00ae89]"
-                                : ""
-                            }`}
+                            className={`font-medium ${formData.userType === "landlord" ? "text-[#00ae89]" : ""}`}
                           >
                             Landlord
                           </div>
@@ -258,6 +407,7 @@ export default function SignUpPage() {
                       <Input
                         id="firstName"
                         name="firstName"
+                        placeholder="First name"
                         value={formData.firstName}
                         onChange={handleChange}
                         required
@@ -268,23 +418,94 @@ export default function SignUpPage() {
                       <Input
                         id="lastName"
                         name="lastName"
+                        placeholder="Last name"
                         value={formData.lastName}
                         onChange={handleChange}
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
+
+                  <Tabs
+                    value={signupType}
+                    onValueChange={(value) =>
+                      setSignupType(value as "email" | "phone")
+                    }
+                    className="w-full"
+                  >
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="email">Email</TabsTrigger>
+                      <TabsTrigger value="phone">Phone</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="email" className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required={signupType === "email"}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="phone" className="space-y-4 mt-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <div className="flex space-x-2">
+                          <Select
+                            value={countryCode}
+                            onValueChange={setCountryCode}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue>
+                                {getSelectedCountryDisplay()}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                              {countryCodes.map((country) => (
+                                <SelectItem
+                                  key={country.key}
+                                  value={`${country.code}-${country.key}`}
+                                  className="flex items-center"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-lg">
+                                      {country.flag}
+                                    </span>
+                                    <span className="font-mono text-sm">
+                                      {country.code}
+                                    </span>
+                                    <span className="text-sm text-gray-600">
+                                      {country.name}
+                                    </span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="Enter phone number"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            required={signupType === "phone"}
+                            className="flex-1"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Enter your phone number without the country code
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <div className="relative">
@@ -292,6 +513,7 @@ export default function SignUpPage() {
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
+                        placeholder="Create a password"
                         value={formData.password}
                         onChange={handleChange}
                         required
@@ -316,6 +538,7 @@ export default function SignUpPage() {
                         id="confirmPassword"
                         name="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         required

@@ -44,7 +44,7 @@ export default function ListingDetailPage() {
   const handleBooking = () => {
     if (dateRange?.from && dateRange?.to) {
       alert(
-        `Booking requested from ${dateRange.from.toDateString()} to ${dateRange.to.toDateString()}`,
+        `Booking requested from ${dateRange.from.toDateString()} to ${dateRange.to.toDateString()}`
       );
     } else {
       alert("Please select a date range before booking");
@@ -53,7 +53,7 @@ export default function ListingDetailPage() {
 
   const handleContact = () => {
     alert(
-      "Contacting landlord... This feature is not implemented in the mock version.",
+      "Contacting landlord... This feature is not implemented in the mock version."
     );
   };
 

@@ -1,18 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import {
   Users,
@@ -29,12 +21,14 @@ import {
   Home,
   Menu,
   X,
+  ChevronDown,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -42,15 +36,48 @@ export default function Navigation() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user);
+
+      if (user) {
+        setUser(user);
+
+        // Fetch the latest role from your custom users table
+        const { data: userRow, error: userError } = await supabase
+          .from("users")
+          .select("verified_role")
+          .eq("user_id", user.id)
+          .single();
+
+        if (!userError && userRow) {
+          setUserRole(userRow.verified_role);
+        }
+      } else {
+        setUser(null);
+        setUserRole(null);
+      }
     };
 
     getUser();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+
+        // Fetch the latest role from your custom users table
+        const { data: userRow, error: userError } = await supabase
+          .from("users")
+          .select("verified_role")
+          .eq("user_id", session.user.id)
+          .single();
+
+        if (!userError && userRow) {
+          setUserRole(userRow.verified_role);
+        }
+      } else {
+        setUser(null);
+        setUserRole(null);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -60,8 +87,27 @@ export default function Navigation() {
     window.location.reload();
   };
 
+  const toggleDropdown = (dropdown: string) => {
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  };
+
+  const closeDropdowns = () => {
+    setOpenDropdown(null);
+  };
+
+  const getDashboardLink = () => {
+    if (userRole === "admin") {
+      return "/admin-dashboard?tab=my-info";
+    } else if (["landlord", "property_manager"].includes(userRole || "")) {
+      return "/landlord-dashboard?tab=my-info";
+    } else if (["tenant", "international"].includes(userRole || "")) {
+      return "/tenant-dashboard?tab=my-info";
+    }
+    return "/dashboard";
+  };
+
   return (
-    <nav className="bg-white shadow-sm relative z-10">
+    <nav className="bg-white shadow-sm relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
@@ -74,42 +120,56 @@ export default function Navigation() {
                 className="h-16 w-auto cursor-pointer mt-1"
               />
             </Link>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {/* Services Navigation Menu */}
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>
-                      <Users className="w-4 h-4 mr-2 text-[#00ae89]" />
-                      Our Services
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="p-4 w-[300px]">
-                        <ul className="space-y-2">
-                          <ListItem
-                            href="/get-started"
-                            title="Get Started Guide"
-                          >
-                            <BookOpen className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem href="/our-customers" title="Our Customers">
-                            <Users className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem href="/pricing" title="Pricing">
-                            <DollarSign className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem
-                            href="/privacy-policy"
-                            title="Privacy Policy"
-                          >
-                            <Shield className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                        </ul>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+            <div className="hidden xl:ml-6 xl:flex xl:space-x-8">
+              {/* Services Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleDropdown("services")}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  <Users className="w-4 h-4 mr-2 text-[#00ae89]" />
+                  Our Services
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                </button>
+                {openDropdown === "services" && (
+                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border z-50">
+                    <div className="py-2">
+                      <Link
+                        href="/get-started"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <BookOpen className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Get Started Guide
+                      </Link>
+                      <Link
+                        href="/our-customers"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <Users className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Our Customers
+                      </Link>
+                      <Link
+                        href="/pricing"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <DollarSign className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Pricing
+                      </Link>
+                      <Link
+                        href="/privacy-policy"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <Shield className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Privacy Policy
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Marketplace Link */}
               <Link
@@ -120,29 +180,39 @@ export default function Navigation() {
                 Marketplace
               </Link>
 
-              {/* About Us Navigation Menu */}
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>
-                      <Heart className="w-4 h-4 mr-2 text-[#00ae89]" />
-                      About Us
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="p-4 w-[300px]">
-                        <ul className="space-y-2">
-                          <ListItem href="/our-purpose" title="Our Purpose">
-                            <Heart className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem href="/contact" title="Contact Us">
-                            <PhoneCall className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                        </ul>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+              {/* About Us Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleDropdown("about")}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  <Heart className="w-4 h-4 mr-2 text-[#00ae89]" />
+                  About Us
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                </button>
+                {openDropdown === "about" && (
+                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border z-50">
+                    <div className="py-2">
+                      <Link
+                        href="/our-purpose"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <Heart className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Our Purpose
+                      </Link>
+                      <Link
+                        href="/contact"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <PhoneCall className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Contact Us
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Newsletter Link */}
               <Link
@@ -153,42 +223,51 @@ export default function Navigation() {
                 Newsletter
               </Link>
 
-              {/* Dev Navigation Menu */}
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>
-                      <LayoutDashboard className="w-4 h-4 mr-2 text-[#00ae89]" />
-                      Dev
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="p-4 w-[300px]">
-                        <ul className="space-y-2">
-                          <ListItem
-                            href="/dev/landlord-dashboard"
-                            title="Landlord Dashboard"
-                          >
-                            <Home className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem
-                            href="/dev/tenant-dashboard"
-                            title="Tenant Dashboard"
-                          >
-                            <UserCircle className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                          <ListItem href="/dev/housesafe" title="HouseSafe">
-                            <CheckSquare className="w-5 h-5 text-[#00ae89]" />
-                          </ListItem>
-                        </ul>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+              {/* Dev Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleDropdown("dev")}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2 text-[#00ae89]" />
+                  Dev
+                  <ChevronDown className="w-4 h-4 ml-1" />
+                </button>
+                {openDropdown === "dev" && (
+                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border z-50">
+                    <div className="py-2">
+                      <Link
+                        href="/dev/landlord-dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <Home className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Landlord Dashboard
+                      </Link>
+                      <Link
+                        href="/dev/tenant-dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <UserCircle className="w-5 h-5 text-[#00ae89] mr-3" />
+                        Tenant Dashboard
+                      </Link>
+                      <Link
+                        href="/dev/housesafe"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeDropdowns}
+                      >
+                        <CheckSquare className="w-5 h-5 text-[#00ae89] mr-3" />
+                        HouseSafe
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
             {user ? (
               <>
                 <Button
@@ -196,7 +275,7 @@ export default function Navigation() {
                   className="text-base font-medium text-black hover:text-gray-900"
                   asChild
                 >
-                  <Link href="/account">My Account</Link>
+                  <Link href={getDashboardLink()}>My Account</Link>
                 </Button>
                 <Button
                   className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full"
@@ -223,8 +302,9 @@ export default function Navigation() {
               </>
             )}
           </div>
+
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex xl:hidden">
             <button
               type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#00ae89]"
@@ -243,34 +323,38 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile menu, show/hide based on menu state */}
+      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden" id="mobile-menu">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {/* Our Services Section */}
+        <div className="xl:hidden" id="mobile-menu">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+            {/* Mobile Services Section */}
             <div className="border-b border-gray-200 py-2">
               <div className="font-medium px-3 py-2">Our Services</div>
               <Link
                 href="/get-started"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Get Started Guide
               </Link>
               <Link
                 href="/our-customers"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Our Customers
               </Link>
               <Link
                 href="/pricing"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Pricing
               </Link>
               <Link
                 href="/privacy-policy"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Privacy Policy
               </Link>
@@ -279,22 +363,25 @@ export default function Navigation() {
             <Link
               href="/marketplace"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
             >
               Marketplace
             </Link>
 
-            {/* About Us Section */}
+            {/* Mobile About Us Section */}
             <div className="border-b border-gray-200 py-2">
               <div className="font-medium px-3 py-2">About Us</div>
               <Link
                 href="/our-purpose"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Our Purpose
               </Link>
               <Link
                 href="/contact"
                 className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Contact Us
               </Link>
@@ -303,55 +390,86 @@ export default function Navigation() {
             <Link
               href="/newsletter"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
             >
               Newsletter
             </Link>
 
+            {/* Mobile Dev Section */}
+            <div className="py-2">
+              <div className="font-medium px-3 py-2">Dev</div>
+              <Link
+                href="/dev/landlord-dashboard"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Landlord Dashboard
+              </Link>
+              <Link
+                href="/dev/tenant-dashboard"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Tenant Dashboard
+              </Link>
+              <Link
+                href="/dev/housesafe"
+                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                HouseSafe
+              </Link>
+            </div>
+
             <div className="pt-4 pb-3 border-t border-gray-200">
-              <div className="flex items-center px-5">
-                <Link
-                  href="/sign-up"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  Sign up
-                </Link>
-                <Link
-                  href="/login"
-                  className="ml-4 block px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a]"
-                >
-                  Log in
-                </Link>
+              <div className="space-y-2 px-3">
+                {user ? (
+                  <>
+                    <Link
+                      href={getDashboardLink()}
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Account
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a]"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/sign-up"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign up
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a]"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Log in
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Overlay to close dropdowns when clicking outside */}
+      {openDropdown && (
+        <div className="fixed inset-0 z-40" onClick={closeDropdowns} />
+      )}
     </nav>
   );
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className,
-          )}
-          {...props}
-        >
-          <div className="flex items-center text-sm font-medium leading-none">
-            {children}
-            <span className="ml-2">{title}</span>
-          </div>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";

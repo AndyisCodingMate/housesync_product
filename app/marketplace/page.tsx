@@ -17,94 +17,28 @@ import { Search, DollarSign, Home, Tag, MapPin, Bed, Bath } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Mock data for listings
-const mockListings = [
-  {
-    id: 1,
-    title: "Cozy Studio Apartment",
-    location: "Downtown",
-    price: 1200,
-    type: "Studio",
-    image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["Street Parking", "Cats Ok"],
-    bedrooms: 1,
-    bathrooms: 1,
-  },
-  {
-    id: 2,
-    title: "Spacious 2BR with View",
-    location: "Uptown",
-    price: 2000,
-    type: "Apartment",
-    image:
-      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["No Smoking", "Dogs Ok"],
-    bedrooms: 2,
-    bathrooms: 2,
-  },
-  {
-    id: 3,
-    title: "Modern Loft near Tech Hub",
-    location: "Silicon Valley",
-    price: 2500,
-    type: "Loft",
-    image:
-      "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["Gym", "Pool"],
-    bedrooms: 1,
-    bathrooms: 1.5,
-  },
-  {
-    id: 4,
-    title: "Charming Cottage",
-    location: "Suburbs",
-    price: 1500,
-    type: "House",
-    image:
-      "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["Garden", "Fireplace"],
-    bedrooms: 2,
-    bathrooms: 1,
-  },
-  {
-    id: 5,
-    title: "Luxury Penthouse",
-    location: "City Center",
-    price: 5000,
-    type: "Penthouse",
-    image:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["Concierge", "Rooftop Terrace"],
-    bedrooms: 3,
-    bathrooms: 3,
-  },
-  {
-    id: 6,
-    title: "Student-Friendly Studio",
-    location: "University Area",
-    price: 800,
-    type: "Studio",
-    image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    amenities: ["Study Room", "Bike Storage"],
-    bedrooms: 1,
-    bathrooms: 1,
-  },
-];
+const listings: any[] = [];
 
 const amenityOptions = [
-  "Street Parking",
-  "Cats Ok",
-  "Dogs Ok",
-  "No Smoking",
-  "Gym",
-  "Pool",
-  "Garden",
-  "Fireplace",
-  "Concierge",
-  "Rooftop Terrace",
+  "Private Room",
+  "Private Bath",
+  "Pets Allowed",
+  "Furnished",
+  "Utilities Included",
+  "Air conditioning",
+  "Parking",
+  "Wi-Fi/Internet included",
+  "Quiet Housing",
+  "Near Campus",
   "Study Room",
   "Bike Storage",
+  "Laundry Facility",
+  "Meal Plan Available",
+  "Shared Kitchen",
+  "24/7 Security",
+  "Gym",
+  "Public Transportation",
+  "Roommate Matching",
 ];
 
 export default function MarketplacePage() {
@@ -118,7 +52,7 @@ export default function MarketplacePage() {
   };
 
   const filteredListings = useMemo(() => {
-    return mockListings.filter((listing) => {
+    return listings.filter((listing) => {
       const matchesSearch =
         listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         listing.location.toLowerCase().includes(searchTerm.toLowerCase());
@@ -129,11 +63,11 @@ export default function MarketplacePage() {
       const matchesAmenities =
         selectedAmenities.length === 0 ||
         selectedAmenities.every((amenity) =>
-          listing.amenities.includes(amenity),
+          listing.amenities.includes(amenity)
         );
       return matchesSearch && matchesPrice && matchesType && matchesAmenities;
     });
-  }, [searchTerm, budgetRange, propertyType, selectedAmenities]);
+  }, [searchTerm, budgetRange, propertyType, selectedAmenities, listings]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -249,13 +183,13 @@ export default function MarketplacePage() {
                   >
                     <SelectValue placeholder="Select property type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent side="bottom" align="start">
                     <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="Shared Room">Shared Room</SelectItem>
+                    <SelectItem value="Single Room">Single Room</SelectItem>
                     <SelectItem value="Studio">Studio</SelectItem>
                     <SelectItem value="Apartment">Apartment</SelectItem>
-                    <SelectItem value="Loft">Loft</SelectItem>
                     <SelectItem value="House">House</SelectItem>
-                    <SelectItem value="Penthouse">Penthouse</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -275,7 +209,7 @@ export default function MarketplacePage() {
                           setSelectedAmenities(
                             checked
                               ? [...selectedAmenities, amenity]
-                              : selectedAmenities.filter((a) => a !== amenity),
+                              : selectedAmenities.filter((a) => a !== amenity)
                           );
                         }}
                         className="text-[#00ae89] border-gray-300 rounded"
@@ -296,8 +230,9 @@ export default function MarketplacePage() {
 
         <div className="mb-4 flex justify-between items-center">
           <p className="text-gray-600">
-            {filteredListings.length}{" "}
-            {filteredListings.length === 1 ? "property" : "properties"} found
+            {listings.length === 0
+              ? "No properties available"
+              : `${filteredListings.length} ${filteredListings.length === 1 ? "property" : "properties"} found`}
           </p>
           <Select defaultValue="featured">
             <SelectTrigger className="w-[180px]">
@@ -391,10 +326,19 @@ export default function MarketplacePage() {
           ))}
         </motion.div>
 
-        {filteredListings.length === 0 && (
+        {filteredListings.length === 0 && listings.length > 0 && (
           <div className="text-center py-12">
             <h3 className="text-xl font-semibold mb-2">No properties found</h3>
             <p className="text-gray-600">Try adjusting your search filters</p>
+          </div>
+        )}
+
+        {listings.length === 0 && (
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold mb-2">
+              No properties available
+            </h3>
+            <p className="text-gray-600">Check back soon for new listings!</p>
           </div>
         )}
       </div>
