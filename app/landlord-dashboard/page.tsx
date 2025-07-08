@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, MapPin, Bed, Bath, Home, Save, Edit, X } from "lucide-react";
+import { Loader2, Save, Edit, X } from "lucide-react";
 import Image from "next/image";
 
 interface UserData {
@@ -172,49 +172,6 @@ export default function LandlordDashboardPage() {
     );
   }
 
-  // Mock saved listings for landlord/property manager
-  const savedListings = [
-    {
-      id: 1,
-      title: "Cozy Family Home",
-      location: "Suburban Area",
-      price: 2200,
-      status: "Available",
-      image:
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      bedrooms: 3,
-      bathrooms: 2,
-      type: "House",
-      amenities: ["Garden", "Garage", "Fireplace"],
-    },
-    {
-      id: 2,
-      title: "Student Apartment Complex",
-      location: "University District",
-      price: 1800,
-      status: "Rented",
-      image:
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      bedrooms: 2,
-      bathrooms: 1,
-      type: "Apartment",
-      amenities: ["Study Room", "Laundry", "WiFi"],
-    },
-    {
-      id: 3,
-      title: "Modern Townhouse",
-      location: "City Center",
-      price: 2800,
-      status: "Available",
-      image:
-        "https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-      bedrooms: 3,
-      bathrooms: 2,
-      type: "Townhouse",
-      amenities: ["Balcony", "Parking", "Modern Kitchen"],
-    },
-  ];
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center text-black">
@@ -243,85 +200,11 @@ export default function LandlordDashboardPage() {
         </div>
 
         <TabsContent value="my-listings">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {savedListings.map((listing) => (
-              <div
-                key={listing.id}
-                className="relative rounded-3xl overflow-hidden cursor-pointer h-full transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2 bg-white border-none"
-              >
-                <div className="relative h-[300px] w-full">
-                  <Image
-                    src={listing.image || "/placeholder.svg"}
-                    alt={listing.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-[#00ae89] text-white px-4 py-1.5 rounded-full text-sm font-medium">
-                    ${listing.price}/mo
-                  </div>
-                  <div className="absolute top-3 left-3">
-                    <Badge
-                      className={
-                        listing.status === "Available"
-                          ? "bg-green-500 rounded-full px-4 py-1.5"
-                          : listing.status === "Rented"
-                            ? "bg-blue-500 rounded-full px-4 py-1.5"
-                            : "bg-yellow-500 rounded-full px-4 py-1.5"
-                      }
-                    >
-                      {listing.status}
-                    </Badge>
-                  </div>
-
-                  <div className="absolute bottom-3 left-3 w-[60%] bg-white/90 backdrop-blur-[2px] p-5 rounded-3xl">
-                    <h3 className="text-lg font-bold text-black leading-tight mb-1">
-                      {listing.title}
-                    </h3>
-
-                    <div className="flex items-center text-[#00ae89] mb-2">
-                      <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                      <span className="text-sm text-gray-700">
-                        {listing.location}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      <div className="flex items-center">
-                        <Bed className="h-4 w-4 mr-1 flex-shrink-0 text-[#00ae89]" />
-                        <span className="text-sm text-black">
-                          {listing.bedrooms} bed
-                        </span>
-                      </div>
-
-                      <div className="flex items-center">
-                        <Bath className="h-4 w-4 mr-1 flex-shrink-0 text-[#00ae89]" />
-                        <span className="text-sm text-black">
-                          {listing.bathrooms} bath
-                        </span>
-                      </div>
-
-                      <div className="flex items-center">
-                        <Home className="h-4 w-4 mr-1 flex-shrink-0 text-[#00ae89]" />
-                        <span className="text-sm text-black">
-                          {listing.type}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1">
-                      {listing.amenities.slice(0, 2).map((amenity, index) => (
-                        <span
-                          key={index}
-                          className="bg-[#e6f7f3] text-[#00ae89] px-2.5 py-1 rounded-full text-xs"
-                        >
-                          {amenity}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No saved listings yet.</p>
+            <p className="text-gray-400 text-sm mt-2">
+              Your saved listings will appear here.
+            </p>
           </div>
         </TabsContent>
 
