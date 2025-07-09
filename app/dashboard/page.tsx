@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
-import { Loader2 } from "lucide-react";
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
+import { Loader2 } from "lucide-react"
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const supabase = createClient();
+  const router = useRouter()
+  const supabase = createClient()
 
   useEffect(() => {
     const redirectToDashboard = async () => {
@@ -15,11 +15,11 @@ export default function DashboardPage() {
         const {
           data: { user },
           error,
-        } = await supabase.auth.getUser();
+        } = await supabase.auth.getUser()
 
         if (error || !user) {
-          router.push("/login");
-          return;
+          router.push("/login")
+          return
         }
 
         // Fetch the latest role from your custom users table
@@ -27,40 +27,40 @@ export default function DashboardPage() {
           .from("users")
           .select("verified_role")
           .eq("user_id", user.id)
-          .single();
+          .single()
 
         if (userError || !userRow) {
-          console.error("Error fetching user role:", userError);
-          router.push("/login");
-          return;
+          console.error("Error fetching user role:", userError)
+          router.push("/login")
+          return
         }
 
-        const userRole = userRow.verified_role;
+        const userRole = userRow.verified_role
 
         // Redirect based on role
         switch (userRole) {
           case "international":
           case "tenant":
-            router.push("/tenant-dashboard");
-            break;
+            router.push("/tenant-dashboard")
+            break
           case "landlord":
           case "property_manager":
-            router.push("/landlord-dashboard");
-            break;
+            router.push("/landlord-dashboard")
+            break
           case "admin":
-            router.push("/admin-dashboard");
-            break;
+            router.push("/admin-dashboard")
+            break
           default:
-            router.push("/tenant-dashboard");
+            router.push("/tenant-dashboard")
         }
       } catch (error) {
-        console.error("Error redirecting to dashboard:", error);
-        router.push("/login");
+        console.error("Error redirecting to dashboard:", error)
+        router.push("/login")
       }
-    };
+    }
 
-    redirectToDashboard();
-  }, [router, supabase]);
+    redirectToDashboard()
+  }, [router, supabase])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -69,5 +69,5 @@ export default function DashboardPage() {
         <p className="text-gray-600">Redirecting to your dashboard...</p>
       </div>
     </div>
-  );
+  )
 }

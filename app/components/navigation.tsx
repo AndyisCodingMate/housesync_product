@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import type { User } from "@supabase/supabase-js";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react"
+import { createClient } from "@/utils/supabase/client"
+import type { User } from "@supabase/supabase-js"
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
 import {
   Users,
   BookOpen,
@@ -22,89 +22,109 @@ import {
   Menu,
   X,
   ChevronDown,
-} from "lucide-react";
+  Loader2,
+} from "lucide-react"
 
 export default function Navigation() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const supabase = createClient();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [userRole, setUserRole] = useState<string | null>(null)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [isSigningOut, setIsSigningOut] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
     const getUser = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser()
 
       if (user) {
-        setUser(user);
+        setUser(user)
 
         // Fetch the latest role from your custom users table
         const { data: userRow, error: userError } = await supabase
           .from("users")
           .select("verified_role")
           .eq("user_id", user.id)
-          .single();
+          .single()
 
         if (!userError && userRow) {
-          setUserRole(userRow.verified_role);
+          setUserRole(userRow.verified_role)
         }
       } else {
-        setUser(null);
-        setUserRole(null);
+        setUser(null)
+        setUserRole(null)
       }
-    };
+    }
 
-    getUser();
+    getUser()
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        setUser(session.user);
+        setUser(session.user)
 
         // Fetch the latest role from your custom users table
         const { data: userRow, error: userError } = await supabase
           .from("users")
           .select("verified_role")
           .eq("user_id", session.user.id)
-          .single();
+          .single()
 
         if (!userError && userRow) {
-          setUserRole(userRow.verified_role);
+          setUserRole(userRow.verified_role)
         }
       } else {
-        setUser(null);
-        setUserRole(null);
+        setUser(null)
+        setUserRole(null)
       }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  };
+    if (isSigningOut) return // Prevent multiple clicks
+
+    setIsSigningOut(true)
+
+    try {
+      // Clear local state immediately for instant UI feedback
+      setUser(null)
+      setUserRole(null)
+
+      // Sign out from Supabase (don't wait for it)
+      supabase.auth.signOut().catch((error) => {
+        console.error("Sign out error:", error)
+      })
+
+      // Immediate redirect without waiting
+      window.location.href = "/"
+    } catch (error) {
+      console.error("Error during sign out:", error)
+      setIsSigningOut(false)
+    }
+  }
 
   const toggleDropdown = (dropdown: string) => {
-    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
-  };
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown)
+  }
 
   const closeDropdowns = () => {
-    setOpenDropdown(null);
-  };
+    setOpenDropdown(null)
+  }
 
   const getDashboardLink = () => {
     if (userRole === "admin") {
-      return "/admin-dashboard?tab=my-info";
+      return "/admin-dashboard?tab=my-info"
     } else if (["landlord", "property_manager"].includes(userRole || "")) {
-      return "/landlord-dashboard?tab=my-info";
+      return "/landlord-dashboard?tab=my-info"
     } else if (["tenant", "international"].includes(userRole || "")) {
-      return "/tenant-dashboard?tab=my-info";
+      return "/tenant-dashboard?tab=my-info"
     }
-    return "/dashboard";
-  };
+    return "/dashboard"
+  }
 
   return (
     <nav className="bg-white shadow-sm relative z-50">
@@ -270,27 +290,27 @@ export default function Navigation() {
           <div className="hidden xl:flex items-center space-x-4">
             {user ? (
               <>
-                <Button
-                  variant="ghost"
-                  className="text-base font-medium text-black hover:text-gray-900"
-                  asChild
-                >
+                <Button variant="ghost" className="text-base font-medium text-black hover:text-gray-900" asChild>
                   <Link href={getDashboardLink()}>My Account</Link>
                 </Button>
                 <Button
-                  className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full"
+                  className="text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] rounded-full disabled:opacity-50"
                   onClick={handleSignOut}
+                  disabled={isSigningOut}
                 >
-                  Sign out
+                  {isSigningOut ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Signing out...
+                    </>
+                  ) : (
+                    "Sign out"
+                  )}
                 </Button>
               </>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  className="text-base font-medium text-black hover:text-gray-900"
-                  asChild
-                >
+                <Button variant="ghost" className="text-base font-medium text-black hover:text-gray-900" asChild>
                   <Link href="/sign-up">Sign up</Link>
                 </Button>
                 <Button
@@ -434,12 +454,20 @@ export default function Navigation() {
                     </Link>
                     <button
                       onClick={() => {
-                        handleSignOut();
-                        setIsMenuOpen(false);
+                        setIsMenuOpen(false)
+                        handleSignOut()
                       }}
-                      className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a]"
+                      disabled={isSigningOut}
+                      className="w-full text-left flex items-center px-3 py-2 rounded-md text-base font-medium text-white bg-[#00ae89] hover:bg-[#009b7a] disabled:opacity-50"
                     >
-                      Sign out
+                      {isSigningOut ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Signing out...
+                        </>
+                      ) : (
+                        "Sign out"
+                      )}
                     </button>
                   </>
                 ) : (
@@ -467,9 +495,7 @@ export default function Navigation() {
       )}
 
       {/* Overlay to close dropdowns when clicking outside */}
-      {openDropdown && (
-        <div className="fixed inset-0 z-40" onClick={closeDropdowns} />
-      )}
+      {openDropdown && <div className="fixed inset-0 z-40" onClick={closeDropdowns} />}
     </nav>
-  );
+  )
 }
