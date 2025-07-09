@@ -126,6 +126,8 @@ export default function Navigation() {
     return "/dashboard"
   }
 
+  const isAdmin = userRole === "admin"
+
   return (
     <nav className="bg-white shadow-sm relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -243,47 +245,49 @@ export default function Navigation() {
                 Newsletter
               </Link>
 
-              {/* Dev Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => toggleDropdown("dev")}
-                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-                >
-                  <LayoutDashboard className="w-4 h-4 mr-2 text-[#00ae89]" />
-                  Dev
-                  <ChevronDown className="w-4 h-4 ml-1" />
-                </button>
-                {openDropdown === "dev" && (
-                  <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border z-50">
-                    <div className="py-2">
-                      <Link
-                        href="/dev/landlord-dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={closeDropdowns}
-                      >
-                        <Home className="w-5 h-5 text-[#00ae89] mr-3" />
-                        Landlord Dashboard
-                      </Link>
-                      <Link
-                        href="/dev/tenant-dashboard"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={closeDropdowns}
-                      >
-                        <UserCircle className="w-5 h-5 text-[#00ae89] mr-3" />
-                        Tenant Dashboard
-                      </Link>
-                      <Link
-                        href="/dev/housesafe"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={closeDropdowns}
-                      >
-                        <CheckSquare className="w-5 h-5 text-[#00ae89] mr-3" />
-                        HouseSafe
-                      </Link>
+              {/* Dev Dropdown - Only show for admin users */}
+              {isAdmin && (
+                <div className="relative">
+                  <button
+                    onClick={() => toggleDropdown("dev")}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  >
+                    <LayoutDashboard className="w-4 h-4 mr-2 text-[#00ae89]" />
+                    Dev
+                    <ChevronDown className="w-4 h-4 ml-1" />
+                  </button>
+                  {openDropdown === "dev" && (
+                    <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border z-50">
+                      <div className="py-2">
+                        <Link
+                          href="/dev/landlord-dashboard"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={closeDropdowns}
+                        >
+                          <Home className="w-5 h-5 text-[#00ae89] mr-3" />
+                          Landlord Dashboard
+                        </Link>
+                        <Link
+                          href="/dev/tenant-dashboard"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={closeDropdowns}
+                        >
+                          <UserCircle className="w-5 h-5 text-[#00ae89] mr-3" />
+                          Tenant Dashboard
+                        </Link>
+                        <Link
+                          href="/dev/housesafe"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={closeDropdowns}
+                        >
+                          <CheckSquare className="w-5 h-5 text-[#00ae89] mr-3" />
+                          HouseSafe
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -415,31 +419,33 @@ export default function Navigation() {
               Newsletter
             </Link>
 
-            {/* Mobile Dev Section */}
-            <div className="py-2">
-              <div className="font-medium px-3 py-2">Dev</div>
-              <Link
-                href="/dev/landlord-dashboard"
-                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Landlord Dashboard
-              </Link>
-              <Link
-                href="/dev/tenant-dashboard"
-                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Tenant Dashboard
-              </Link>
-              <Link
-                href="/dev/housesafe"
-                className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                HouseSafe
-              </Link>
-            </div>
+            {/* Mobile Dev Section - Only show for admin users */}
+            {isAdmin && (
+              <div className="py-2">
+                <div className="font-medium px-3 py-2">Dev</div>
+                <Link
+                  href="/dev/landlord-dashboard"
+                  className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Landlord Dashboard
+                </Link>
+                <Link
+                  href="/dev/tenant-dashboard"
+                  className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Tenant Dashboard
+                </Link>
+                <Link
+                  href="/dev/housesafe"
+                  className="block px-3 py-2 pl-8 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  HouseSafe
+                </Link>
+              </div>
+            )}
 
             <div className="pt-4 pb-3 border-t border-gray-200">
               <div className="space-y-2 px-3">
